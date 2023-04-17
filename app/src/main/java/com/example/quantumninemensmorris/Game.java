@@ -1,9 +1,13 @@
 package com.example.quantumninemensmorris;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -14,7 +18,8 @@ public class Game extends Activity {
     ArrayList<TextView> textViews;
     private String turn="X";
     private String phase = "Placing";
-    private Integer xPieces = 9, oPieces = 9;
+    private Integer xPiecesPlaced = 9, oPiecesPlaced = 9, xPieces = 0, oPieces = 0;
+    private Button btnReset;
 
 
     @Override
@@ -22,6 +27,7 @@ public class Game extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
 
+        btnReset = findViewById(R.id.btnReset);
         showTurn();
         showPhase();
         textViews = new ArrayList<>();
@@ -30,6 +36,22 @@ public class Game extends Activity {
     }
 
     private void setListeners() {
+        btnReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                turn = "X";
+                phase = "Placing";
+                xPiecesPlaced = 9;
+                oPiecesPlaced = 9;
+                xPieces = 0;
+                oPieces = 0;
+                for (TextView tv : textViews) {
+                    tv.setText("");
+                }
+                showTurn();
+                showPhase();
+            }
+        });
         for (TextView tv : textViews) {
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -38,9 +60,11 @@ public class Game extends Activity {
                         case "Placing":
                             if (tv.getText().equals("")) {
                                 if(turn.equals("X")) {
-                                    xPieces--;
+                                    xPiecesPlaced--;
+                                    xPieces++;
                                 } else {
-                                    oPieces--;
+                                    oPiecesPlaced--;
+                                    oPieces++;
                                 }
                                 tv.setText(turn);
                                 choosePlayer();
@@ -50,6 +74,7 @@ public class Game extends Activity {
                             }
                             break;
                         case "Moving":
+
                             break;
                         case "Flying":
                             break;
@@ -57,6 +82,21 @@ public class Game extends Activity {
                             finish();
                     }
 
+                }
+            });
+            tv.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    switch (phase) {
+                        case "Placing":
+                            break;
+                        case "Moving":
+                            if(!tv.getText().equals("")) {
+                                tv.setTypeface(null, Typeface.BOLD);
+                                Toast.makeText(Game.this, "Moving piece", Toast.LENGTH_SHORT).show();
+                            }
+                    }
+                    return false;
                 }
             });
         }
@@ -81,7 +121,7 @@ public class Game extends Activity {
 
     private void choosePhase() {
         if(phase.equals("Placing")){
-            if(xPieces.equals(0) && oPieces.equals(0)) {
+            if(xPiecesPlaced.equals(0) && oPiecesPlaced.equals(0)) {
                 phase = "Moving";
             }
         }
@@ -109,4 +149,5 @@ public class Game extends Activity {
                 tvPhase.setText("Phase 3: 'Flying'");
         }
     }
+
 }

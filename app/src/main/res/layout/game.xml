@@ -589,13 +589,14 @@
     </TableLayout>
 
     <Button
+        android:id="@+id/btnReset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reset"
         android:layout_below="@+id/tableBoard"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:background="@color/palette_blue"
+        android:text="Reset"
         android:textColor="@color/palette_white"></Button>
 
 
