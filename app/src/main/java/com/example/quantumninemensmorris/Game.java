@@ -12,15 +12,18 @@ import java.util.ArrayList;
 public class Game extends Activity {
 
     ArrayList<TextView> textViews;
-    TextView tv1, tv2, tv3, tv4, tv5, tv6, tv7, tv8, tv9, tv10, tv11, tv12, tv13, tv14, tv15, tv16,
-            tv17, tv18, tv19, tv20, tv21, tv22, tv23, tv24;
     private String turn="X";
+    private String phase = "Placing";
+    private Integer xPieces = 9, oPieces = 9;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
 
+        showTurn();
+        showPhase();
         textViews = new ArrayList<>();
         getTextViews();
         setListeners();
@@ -31,13 +34,31 @@ public class Game extends Activity {
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (tv.getText().equals("")) {
-                        tv.setText(turn);
-                        choosePlayer();
+                    switch (phase) {
+                        case "Placing":
+                            if (tv.getText().equals("")) {
+                                if(turn.equals("X")) {
+                                    xPieces--;
+                                } else {
+                                    oPieces--;
+                                }
+                                tv.setText(turn);
+                                choosePlayer();
+                                choosePhase();
+                                showTurn();
+                                showPhase();
+                            }
+                            break;
+                        case "Moving":
+                            break;
+                        case "Flying":
+                            break;
+                        default:
+                            finish();
                     }
+
                 }
             });
-            System.out.println("This is a tv");
         }
 
     }
@@ -55,6 +76,37 @@ public class Game extends Activity {
             turn = "O";
         } else {
             turn = "X";
+        }
+    }
+
+    private void choosePhase() {
+        if(phase.equals("Placing")){
+            if(xPieces.equals(0) && oPieces.equals(0)) {
+                phase = "Moving";
+            }
+        }
+    }
+
+    private void showTurn() {
+        TextView tvTurn = findViewById(R.id.tvTurn);
+        if(turn.equals("X")) {
+            tvTurn.setText("Player X");
+        } else {
+            tvTurn.setText("Player 0");
+        }
+    }
+
+    private void showPhase() {
+        TextView tvPhase = findViewById(R.id.tvPhase);
+        switch (phase) {
+            case "Placing":
+                tvPhase.setText("Phase 1: Placing Pieces");
+                break;
+            case "Moving":
+                tvPhase.setText("Phase 2: Moving Pieces");
+                break;
+            case "Flying":
+                tvPhase.setText("Phase 3: 'Flying'");
         }
     }
 }

@@ -29,14 +29,14 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Jugar"
+            android:text="Play"
             android:id="@+id/BtnPlay">
         </Button>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Salir"
+            android:text="Exit"
             android:id="@+id/BtnExit"
             android:layout_below="@id/BtnPlay"
             android:layout_marginTop="20dp">

@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Iniciando el juego...");
                 initGame();
             }
         });
