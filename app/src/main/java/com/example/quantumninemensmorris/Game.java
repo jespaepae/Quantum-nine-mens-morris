@@ -12,14 +12,18 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Game extends Activity {
 
-    ArrayList<TextView> textViews;
+    private ArrayList<TextView> textViews;
     private String turn="X";
     private String phase = "Placing";
-    private Integer xPiecesPlaced = 9, oPiecesPlaced = 9, xPieces = 0, oPieces = 0;
+    private Integer xPiecesPlaced = 9, oPiecesPlaced = 9, xPieces = 0, oPieces = 0, millsBefore,
+        millsAfter;
     private Button btnReset;
+    private ArrayList<Integer> board;
+    private Boolean newMill= false;
 
 
     @Override
@@ -27,6 +31,10 @@ public class Game extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
 
+        board = new ArrayList<>();
+        for(int i = 0; i < 24; i++) {
+            board.add(2);
+        }
         btnReset = findViewById(R.id.btnReset);
         showTurn();
         showPhase();
@@ -58,19 +66,41 @@ public class Game extends Activity {
                 public void onClick(View v) {
                     switch (phase) {
                         case "Placing":
-                            if (tv.getText().equals("")) {
+                            if (tv.getText().equals("") && !newMill) {
                                 if(turn.equals("X")) {
+                                    millsBefore = numberOfMills(1);
                                     xPiecesPlaced--;
                                     xPieces++;
+                                    board.set(textViews.indexOf(tv), 1);
+                                    millsAfter = numberOfMills(1);
+                                    if(millsAfter - millsBefore > 0) newMill = true;
                                 } else {
+                                    millsBefore = numberOfMills(0);
                                     oPiecesPlaced--;
                                     oPieces++;
+                                    board.set(textViews.indexOf(tv), 0);
+                                    millsAfter = numberOfMills(0);
+                                    if(millsAfter - millsBefore > 0) newMill = true;
                                 }
                                 tv.setText(turn);
-                                choosePlayer();
+                                if(!newMill)choosePlayer();
                                 choosePhase();
                                 showTurn();
                                 showPhase();
+                            } else if(newMill) {
+                                if(turn.equals("X") && tv.getText().equals("O")) {
+                                    tv.setText("");
+                                    choosePlayer();
+                                    showTurn();
+                                    board.set(textViews.indexOf(tv), 2);
+                                    newMill = false;
+                                } else if (turn.equals("O") && tv.getText().equals("X")) {
+                                    tv.setText("");
+                                    choosePlayer();
+                                    showTurn();
+                                    board.set(textViews.indexOf(tv), 2);
+                                    newMill = false;
+                                }
                             }
                             break;
                         case "Moving":
@@ -148,6 +178,59 @@ public class Game extends Activity {
             case "Flying":
                 tvPhase.setText("Phase 3: 'Flying'");
         }
+    }
+
+    private Integer numberOfMills(Integer num) {
+        Integer res = 0;
+        if(board.get(0).equals(num) && board.get(1).equals(num) && board.get(2).equals(num)) {
+            res++;
+        }
+        if (board.get(3).equals(num) && board.get(4).equals(num) && board.get(5).equals(num)) {
+            res++;
+        }
+        if (board.get(6).equals(num) && board.get(7).equals(num) && board.get(8).equals(num)) {
+            res++;
+        }
+        if (board.get(9).equals(num) && board.get(10).equals(num) && board.get(11).equals(num)) {
+            res++;
+        }
+        if (board.get(12).equals(num) && board.get(13).equals(num) && board.get(14).equals(num)) {
+            res++;
+        }
+        if (board.get(15).equals(num) && board.get(16).equals(num) && board.get(17).equals(num)) {
+            res++;
+        }
+        if (board.get(18).equals(num) && board.get(19).equals(num) && board.get(20).equals(num)) {
+            res++;
+        }
+        if (board.get(21).equals(num) && board.get(22).equals(num) && board.get(23).equals(num)) {
+            res++;
+        }
+        if (board.get(0).equals(num) && board.get(9).equals(num) && board.get(21).equals(num)) {
+            res++;
+        }
+        if (board.get(3).equals(num) && board.get(10).equals(num) && board.get(18).equals(num)) {
+            res++;
+        }
+        if (board.get(6).equals(num) && board.get(11).equals(num) && board.get(15).equals(num)) {
+            res++;
+        }
+        if (board.get(1).equals(num) && board.get(4).equals(num) && board.get(7).equals(num)) {
+            res++;
+        }
+        if (board.get(16).equals(num) && board.get(19).equals(num) && board.get(22).equals(num)) {
+            res++;
+        }
+        if (board.get(8).equals(num) && board.get(12).equals(num) && board.get(17).equals(num)) {
+            res++;
+        }
+        if (board.get(5).equals(num) && board.get(13).equals(num) && board.get(20).equals(num)) {
+            res++;
+        }
+        if (board.get(2).equals(num) && board.get(14).equals(num) && board.get(23).equals(num)) {
+            res++;
+        }
+        return res;
     }
 
 }
