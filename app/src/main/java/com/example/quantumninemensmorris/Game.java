@@ -20,7 +20,7 @@ public class Game extends Activity {
     private String turn="X";
     private String phase = "Placing";
     private Integer xPiecesPlaced = 9, oPiecesPlaced = 9, xPieces = 0, oPieces = 0, millsBefore,
-        millsAfter;
+        millsAfter, moving = -1;
     private Button btnReset;
     private ArrayList<Integer> board;
     private Boolean newMill= false;
@@ -53,8 +53,12 @@ public class Game extends Activity {
                 oPiecesPlaced = 9;
                 xPieces = 0;
                 oPieces = 0;
+                newMill = false;
                 for (TextView tv : textViews) {
                     tv.setText("");
+                }
+                for (int i = 0; i < board.size(); i++) {
+                    board.set(i, 2);
                 }
                 showTurn();
                 showPhase();
@@ -73,14 +77,20 @@ public class Game extends Activity {
                                     xPieces++;
                                     board.set(textViews.indexOf(tv), 1);
                                     millsAfter = numberOfMills(1);
-                                    if(millsAfter - millsBefore > 0) newMill = true;
+                                    if(millsAfter - millsBefore > 0) {
+                                        newMill = true;
+                                        Toast.makeText(Game.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                    }
                                 } else {
                                     millsBefore = numberOfMills(0);
                                     oPiecesPlaced--;
                                     oPieces++;
                                     board.set(textViews.indexOf(tv), 0);
                                     millsAfter = numberOfMills(0);
-                                    if(millsAfter - millsBefore > 0) newMill = true;
+                                    if(millsAfter - millsBefore > 0) {
+                                        newMill = true;
+                                        Toast.makeText(Game.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                                 tv.setText(turn);
                                 if(!newMill)choosePlayer();
@@ -104,7 +114,57 @@ public class Game extends Activity {
                             }
                             break;
                         case "Moving":
-
+                            if(!tv.getText().equals("") && tv.getText().equals(turn) && moving < 0) {
+                                moving = textViews.indexOf(tv);
+                                tv.setTypeface(null, Typeface.BOLD);
+                                Toast.makeText(Game.this, "Moving piece", Toast.LENGTH_SHORT).show();
+                            } else if (moving > 0 && !newMill) {
+                                if(turn.equals("X")) {
+                                    board.set(moving, 2);
+                                    textViews.get(moving).setText("");
+                                    millsBefore = numberOfMills(1);
+                                    xPiecesPlaced--;
+                                    xPieces++;
+                                    board.set(textViews.indexOf(tv), 1);
+                                    millsAfter = numberOfMills(1);
+                                    if(millsAfter - millsBefore > 0) {
+                                        newMill = true;
+                                        Toast.makeText(Game.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    board.set(moving, 2);
+                                    textViews.get(moving).setText("");
+                                    millsBefore = numberOfMills(0);
+                                    oPiecesPlaced--;
+                                    oPieces++;
+                                    board.set(textViews.indexOf(tv), 0);
+                                    millsAfter = numberOfMills(0);
+                                    if(millsAfter - millsBefore > 0) {
+                                        newMill = true;
+                                        Toast.makeText(Game.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                tv.setText(turn);
+                                if(!newMill)choosePlayer();
+                                choosePhase();
+                                showTurn();
+                                showPhase();
+                                moving = -1;
+                            } else if(newMill) {
+                                if(turn.equals("X") && tv.getText().equals("O")) {
+                                    tv.setText("");
+                                    choosePlayer();
+                                    showTurn();
+                                    board.set(textViews.indexOf(tv), 2);
+                                    newMill = false;
+                                } else if (turn.equals("O") && tv.getText().equals("X")) {
+                                    tv.setText("");
+                                    choosePlayer();
+                                    showTurn();
+                                    board.set(textViews.indexOf(tv), 2);
+                                    newMill = false;
+                                }
+                            }
                             break;
                         case "Flying":
                             break;
@@ -121,10 +181,7 @@ public class Game extends Activity {
                         case "Placing":
                             break;
                         case "Moving":
-                            if(!tv.getText().equals("")) {
-                                tv.setTypeface(null, Typeface.BOLD);
-                                Toast.makeText(Game.this, "Moving piece", Toast.LENGTH_SHORT).show();
-                            }
+
                     }
                     return false;
                 }
@@ -229,6 +286,23 @@ public class Game extends Activity {
         }
         if (board.get(2).equals(num) && board.get(14).equals(num) && board.get(23).equals(num)) {
             res++;
+        }
+        return res;
+    }
+
+    private ArrayList<Integer> availableMovesOf(Integer piece) {
+        ArrayList<Integer> res = new ArrayList<>();
+        switch (piece) {
+            case 0:
+                res.add(0);
+                if(board.get(1).equals(2)) {
+                    res.add(1);
+                } else if (board.get(9).equals(2)){
+                    res.add(9);
+                }
+            case 1:
+                res = new ArrayList<>(Arrays.asList(0,2));
+                break;
         }
         return res;
     }
