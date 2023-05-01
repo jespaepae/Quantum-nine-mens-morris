@@ -118,7 +118,7 @@ public class Game extends Activity {
                                 moving = textViews.indexOf(tv);
                                 tv.setTypeface(null, Typeface.BOLD);
                                 Toast.makeText(Game.this, "Moving piece", Toast.LENGTH_SHORT).show();
-                            } else if (moving > 0 && !newMill) {
+                            } else if (moving >= 0 && !newMill) {
                                 if(turn.equals("X")) {
                                     board.set(moving, 2);
                                     textViews.get(moving).setText("");
@@ -295,14 +295,96 @@ public class Game extends Activity {
         switch (piece) {
             case 0:
                 res.add(0);
-                if(board.get(1).equals(2)) {
+                if(boxIsEmpty(1)) {
                     res.add(1);
-                } else if (board.get(9).equals(2)){
+                }
+                if (boxIsEmpty(9)){
                     res.add(9);
                 }
-            case 1:
-                res = new ArrayList<>(Arrays.asList(0,2));
                 break;
+            case 1:
+                res.add(1);
+                if(boxIsEmpty(0)) {
+                    res.add(0);
+                }
+                if (boxIsEmpty(2)){
+                    res.add(2);
+                }
+                if (boxIsEmpty(4)){
+                    res.add(4);
+                }
+                break;
+            case 2:
+                res.add(2);
+                if(boxIsEmpty(1)) {
+                    res.add(1);
+                }
+                if (boxIsEmpty(14)){
+                    res.add(14);
+                }
+                break;
+            case 3:
+                res.add(3);
+                if(boxIsEmpty(4)) {
+                    res.add(4);
+                }
+                if (boxIsEmpty(10)){
+                    res.add(10);
+                }
+                break;
+            case 4:
+                res.add(4);
+                if(boxIsEmpty(1)) {
+                    res.add(1);
+                }
+                if (boxIsEmpty(3)){
+                    res.add(3);
+                }
+                if (boxIsEmpty(5)){
+                    res.add(5);
+                }
+                if (boxIsEmpty(7)) {
+                    res.add(7);
+                }
+                break;
+            case 5:
+                res.add(5);
+                if(boxIsEmpty(4)) {
+                    res.add(4);
+                }
+                if (boxIsEmpty(13)){
+                    res.add(13);
+                }
+                break;
+            case 6:
+                res.add(6);
+                if(boxIsEmpty(7)) {
+                    res.add(7);
+                }
+                if (boxIsEmpty(11)){
+                    res.add(11);
+                }
+                break;
+            case 7:
+                res.add(7);
+                if(boxIsEmpty(4)) {
+                    res.add(4);
+                }
+                if (boxIsEmpty(6)){
+                    res.add(6);
+                }
+                if (boxIsEmpty(8)){
+                    res.add(8);
+                }
+                break;
+        }
+        return res;
+    }
+
+    private Boolean boxIsEmpty(Integer box) {
+        Boolean res = false;
+        if (board.get(box).equals(2)) {
+            res = true;
         }
         return res;
     }
