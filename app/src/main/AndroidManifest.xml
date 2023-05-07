@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Game"></activity>
+        <activity android:name=".GameVsAI"></activity>
     </application>
 
 </manifest>

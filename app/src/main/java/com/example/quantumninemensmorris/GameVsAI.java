@@ -3,7 +3,6 @@ package com.example.quantumninemensmorris;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,18 +10,24 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Game extends Activity {
+public class GameVsAI extends Activity {
 
     private ArrayList<TextView> textViews;
+    private Graph<String, DefaultEdge> graph;
     private String turn="X";
     private String phase = "Placing";
-    private Integer xPiecesPlaced = 9, oPiecesPlaced = 9, xPieces = 0, oPieces = 0, millsBefore,
+    private Integer xPiecesPlaced = 18, oPiecesPlaced = 18, xPieces = 0, oPieces = 0, millsBefore,
         millsAfter, moving = -1;
     private Button btnReset;
     private ArrayList<Integer> board;
+    private ArrayList<String> xPiecesRemaining, oPiecesRemaining;
     private Boolean newMill= false;
 
 
@@ -35,7 +40,19 @@ public class Game extends Activity {
         for(int i = 0; i < 24; i++) {
             board.add(2);
         }
+
+        xPiecesRemaining = new ArrayList<>(Arrays.asList("X\u2081", "X\u2081", "X\u2082", "X\u2082",
+                "X\u2083", "X\u2083", "X\u2084", "X\u2084", "X\u2085", "X\u2085", "X\u2086", "X\u2086",
+                "X\u2087", "X\u2087", "X\u2088", "X\u2088", "X\u2089", "X\u2089"));
+
+        oPiecesRemaining = new ArrayList<>(Arrays.asList("O\u2081", "O\u2081", "O\u2082", "O\u2082",
+                "O\u2083", "O\u2083", "O\u2084", "O\u2084", "O\u2085", "O\u2085", "O\u2086", "O\u2086",
+                "O\u2087", "O\u2087", "O\u2088", "O\u2088", "O\u2089", "O\u2089"));
+
         btnReset = findViewById(R.id.btnReset);
+
+        graph = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
+
         showTurn();
         showPhase();
         textViews = new ArrayList<>();
@@ -49,10 +66,11 @@ public class Game extends Activity {
             public void onClick(View v) {
                 turn = "X";
                 phase = "Placing";
-                xPiecesPlaced = 9;
-                oPiecesPlaced = 9;
+                xPiecesPlaced = 18;
+                oPiecesPlaced = 18;
                 xPieces = 0;
                 oPieces = 0;
+                moving = -1;
                 newMill = false;
                 for (TextView tv : textViews) {
                     tv.setText("");
@@ -68,32 +86,35 @@ public class Game extends Activity {
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    tv.setTextSize(12);
                     switch (phase) {
                         case "Placing":
-                            if (tv.getText().equals("") && !newMill) {
+                            if (!newMill) {
                                 if(turn.equals("X")) {
                                     millsBefore = numberOfMills(1);
                                     xPiecesPlaced--;
                                     xPieces++;
+                                    placePiece(1, tv);
+                                    System.out.println(xPiecesRemaining);
                                     board.set(textViews.indexOf(tv), 1);
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(Game.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
                                     millsBefore = numberOfMills(0);
                                     oPiecesPlaced--;
                                     oPieces++;
+                                    placePiece(0, tv);
                                     board.set(textViews.indexOf(tv), 0);
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(Game.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                tv.setText(turn);
-                                if(!newMill)choosePlayer();
+                                if(!newMill && (xPiecesPlaced % 2 == 0 && oPiecesPlaced % 2 == 0)) choosePlayer();
                                 choosePhase();
                                 showTurn();
                                 showPhase();
@@ -117,7 +138,7 @@ public class Game extends Activity {
                             if(!tv.getText().equals("") && tv.getText().equals(turn) && moving < 0) {
                                 moving = textViews.indexOf(tv);
                                 tv.setTypeface(null, Typeface.BOLD);
-                                Toast.makeText(Game.this, "Moving piece", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(GameVsAI.this, "Moving piece", Toast.LENGTH_SHORT).show();
                             } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))) {
                                 if(turn.equals("X")) {
                                     board.set(moving, 2);
@@ -129,7 +150,7 @@ public class Game extends Activity {
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(Game.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
                                     board.set(moving, 2);
@@ -141,7 +162,7 @@ public class Game extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(Game.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 tv.setText(turn);
@@ -566,6 +587,17 @@ public class Game extends Activity {
             res = true;
         }
         return res;
+    }
+
+    private void placePiece(Integer piece, TextView tv) {
+        if (piece.equals(0)) {
+            tv.setText(tv.getText() + oPiecesRemaining.get(0));
+            oPiecesRemaining.remove(0);
+        } else {
+            tv.setText(tv.getText() + xPiecesRemaining.get(0));
+            xPiecesRemaining.remove(0);
+        }
+
     }
 
 }
