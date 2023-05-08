@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import org.jgrapht.Graph;
+import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -78,6 +79,14 @@ public class GameVsAI extends Activity {
                 for (int i = 0; i < board.size(); i++) {
                     board.set(i, 2);
                 }
+                xPiecesRemaining = new ArrayList<>(Arrays.asList("X\u2081", "X\u2081", "X\u2082", "X\u2082",
+                        "X\u2083", "X\u2083", "X\u2084", "X\u2084", "X\u2085", "X\u2085", "X\u2086", "X\u2086",
+                        "X\u2087", "X\u2087", "X\u2088", "X\u2088", "X\u2089", "X\u2089"));
+
+                oPiecesRemaining = new ArrayList<>(Arrays.asList("O\u2081", "O\u2081", "O\u2082", "O\u2082",
+                        "O\u2083", "O\u2083", "O\u2084", "O\u2084", "O\u2085", "O\u2085", "O\u2086", "O\u2086",
+                        "O\u2087", "O\u2087", "O\u2088", "O\u2088", "O\u2089", "O\u2089"));
+                graph = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
                 showTurn();
                 showPhase();
             }
@@ -611,7 +620,20 @@ public class GameVsAI extends Activity {
                 }
             }
         }
-        System.out.println(graph.toString());
+        System.out.println(isEntangled(piece));
+    }
+
+    private Boolean isEntangled(String piece) {
+        Boolean res = false;
+
+        PatonCycleBase<String, DefaultEdge> cycleDetector = new PatonCycleBase<>(graph);
+        if (!cycleDetector.getCycleBasis().getCycles().isEmpty()) {
+            res = true;
+            System.out.println(cycleDetector.getCycleBasis().getCycles());
+            System.out.println(graph);
+        }
+
+        return res;
     }
 
 }
