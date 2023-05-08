@@ -90,24 +90,23 @@ public class GameVsAI extends Activity {
                     switch (phase) {
                         case "Placing":
                             if (!newMill) {
-                                if(turn.equals("X")) {
+                                if(turn.equals("X") && !tv.getText().toString().trim().contains(xPiecesRemaining.get(0))) {
                                     millsBefore = numberOfMills(1);
                                     xPiecesPlaced--;
                                     xPieces++;
                                     placePiece(1, tv);
-                                    System.out.println(xPiecesRemaining);
-                                    board.set(textViews.indexOf(tv), 1);
+                                    board.set(textViews.indexOf(tv), 3);
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
                                         Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
-                                } else {
+                                } else if (turn.equals("O") && !tv.getText().toString().trim().contains(oPiecesRemaining.get(0))){
                                     millsBefore = numberOfMills(0);
                                     oPiecesPlaced--;
                                     oPieces++;
                                     placePiece(0, tv);
-                                    board.set(textViews.indexOf(tv), 0);
+                                    board.set(textViews.indexOf(tv), 3);
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
@@ -591,13 +590,28 @@ public class GameVsAI extends Activity {
 
     private void placePiece(Integer piece, TextView tv) {
         if (piece.equals(0)) {
-            tv.setText(tv.getText() + oPiecesRemaining.get(0));
+            addVertexAndEdgesToGraph(oPiecesRemaining.get(0), tv);
+            tv.setText(tv.getText() + " " + oPiecesRemaining.get(0));
             oPiecesRemaining.remove(0);
         } else {
-            tv.setText(tv.getText() + xPiecesRemaining.get(0));
+            addVertexAndEdgesToGraph(xPiecesRemaining.get(0), tv);
+            tv.setText(tv.getText() + " " + xPiecesRemaining.get(0));
             xPiecesRemaining.remove(0);
         }
 
+    }
+
+    private void addVertexAndEdgesToGraph(String piece, TextView tv) {
+        graph.addVertex(piece);
+        if(!tv.getText().equals("")) {
+            String[] pieces = tv.getText().toString().split(" ");
+            for(String item : pieces) {
+                if(item.length() != 0) {
+                    graph.addEdge(item, piece);
+                }
+            }
+        }
+        System.out.println(graph.toString());
     }
 
 }
