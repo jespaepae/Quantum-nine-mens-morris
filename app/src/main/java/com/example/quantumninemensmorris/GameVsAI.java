@@ -11,12 +11,15 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import org.jgrapht.Graph;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.Set;
 
 public class GameVsAI extends Activity {
 
@@ -28,14 +31,17 @@ public class GameVsAI extends Activity {
         millsAfter, moving = -1;
     private Button btnReset;
     private ArrayList<Integer> board;
-    private ArrayList<String> xPiecesRemaining, oPiecesRemaining;
+    private ArrayList<String> xPiecesRemaining, oPiecesRemaining, collapsePieces;
     private Boolean newMill= false;
+
+    private Random random;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
+        random = new Random();
 
         board = new ArrayList<>();
         for(int i = 0; i < 24; i++) {
@@ -49,6 +55,8 @@ public class GameVsAI extends Activity {
         oPiecesRemaining = new ArrayList<>(Arrays.asList("O\u2081", "O\u2081", "O\u2082", "O\u2082",
                 "O\u2083", "O\u2083", "O\u2084", "O\u2084", "O\u2085", "O\u2085", "O\u2086", "O\u2086",
                 "O\u2087", "O\u2087", "O\u2088", "O\u2088", "O\u2089", "O\u2089"));
+
+        collapsePieces = new ArrayList<>();
 
         btnReset = findViewById(R.id.btnReset);
 
@@ -86,6 +94,7 @@ public class GameVsAI extends Activity {
                 oPiecesRemaining = new ArrayList<>(Arrays.asList("O\u2081", "O\u2081", "O\u2082", "O\u2082",
                         "O\u2083", "O\u2083", "O\u2084", "O\u2084", "O\u2085", "O\u2085", "O\u2086", "O\u2086",
                         "O\u2087", "O\u2087", "O\u2088", "O\u2088", "O\u2089", "O\u2089"));
+                collapsePieces = new ArrayList<>();
                 graph = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
                 showTurn();
                 showPhase();
@@ -600,11 +609,21 @@ public class GameVsAI extends Activity {
     private void placePiece(Integer piece, TextView tv) {
         if (piece.equals(0)) {
             addVertexAndEdgesToGraph(oPiecesRemaining.get(0), tv);
-            tv.setText(tv.getText() + " " + oPiecesRemaining.get(0));
+            if(isEntangled(oPiecesRemaining.get(0), tv) && oPiecesRemaining.size() % 2 == 1) {
+                tv.setText(tv.getText() + " " + oPiecesRemaining.get(0));
+                collapse();
+            } else {
+                tv.setText(tv.getText() + " " + oPiecesRemaining.get(0));
+            }
             oPiecesRemaining.remove(0);
         } else {
             addVertexAndEdgesToGraph(xPiecesRemaining.get(0), tv);
-            tv.setText(tv.getText() + " " + xPiecesRemaining.get(0));
+            if(isEntangled(xPiecesRemaining.get(0), tv) && xPiecesRemaining.size() % 2 == 1) {
+                tv.setText(tv.getText() + " " + xPiecesRemaining.get(0));
+                collapse();
+            } else {
+                tv.setText(tv.getText() + " " + xPiecesRemaining.get(0));
+            }
             xPiecesRemaining.remove(0);
         }
 
@@ -620,18 +639,116 @@ public class GameVsAI extends Activity {
                 }
             }
         }
-        System.out.println(isEntangled(piece));
     }
 
-    private Boolean isEntangled(String piece) {
+    private Boolean isEntangled(String piece, TextView tv) {
         Boolean res = false;
+
+        if (!tv.getText().toString().equals("")) {
+            String[] pieces = tv.getText().toString().split(" ");
+            for (String item : pieces) {
+                if (!item.equals("")) {
+                    for(TextView t: textViews) {
+                        if(t.getText().toString().contains(piece) && t.getText().toString().contains(item)) {
+                            res = true;
+                            collapsePieces.add(piece);
+                        }
+                    }
+                }
+            }
+        }
 
         PatonCycleBase<String, DefaultEdge> cycleDetector = new PatonCycleBase<>(graph);
         if (!cycleDetector.getCycleBasis().getCycles().isEmpty()) {
             res = true;
-            System.out.println(cycleDetector.getCycleBasis().getCycles());
-            System.out.println(graph);
+            collapsePieces.add(piece);
         }
+
+        return res;
+    }
+
+    private void collapse() {
+        if(collapsePieces.size()> 0) {
+            String piece = collapsePieces.get(0);
+            ArrayList<String> vertices = getConnectedVertexOf(piece);
+
+            Boolean isValid = false;
+            ArrayList<String> textViewsCopy = new ArrayList<>();
+            ArrayList<Integer> boardCopy = new ArrayList<>(board);
+            for(TextView tv : textViews) {
+                textViewsCopy.add(tv.getText().toString());
+            }
+
+            while(!isValid) {
+
+                for(TextView tv : textViews) {
+                    tv.setText(textViewsCopy.get(textViews.indexOf(tv)));
+                }
+                board = new ArrayList<>();
+                board.addAll(boardCopy);
+
+                for(String vertex : vertices) {
+                    ArrayList<Integer> indexesToCollapse = getIndexesOfPiece(vertex);
+
+                    Integer index;
+
+                    if(indexesToCollapse.size() > 1) {
+                        index = indexesToCollapse.get(random.nextInt(2));
+                    } else if (indexesToCollapse.size() == 1){
+                        index = indexesToCollapse.get(0);
+                    } else {
+                        break;
+                    }
+
+                    String collapsePiece = vertex.substring(0,1);
+
+                    textViews.get(index).setText(collapsePiece);
+                    if(collapsePiece.equals("X")) {
+                        board.set(index, 1);
+                    } else {
+                        board.set(index, 0);
+                    }
+
+                    if (vertices.indexOf(vertex) == vertices.size() - 1) {
+                        isValid = true;
+
+                    }
+                }
+            }
+
+
+
+            for(String vertex : vertices) {
+                graph.removeVertex(vertex);
+            }
+            collapsePieces = new ArrayList<>();
+        }
+
+    }
+
+    private ArrayList<Integer> getIndexesOfPiece(String piece) {
+        ArrayList<Integer> res = new ArrayList<>();
+
+        for (TextView tv : textViews) {
+            String[] pieces = tv.getText().toString().split(" ");
+            for(String item : pieces) {
+                if (!item.equals("") && item.equals(piece)) {
+                    res.add(textViews.indexOf(tv));
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private ArrayList<String> getConnectedVertexOf(String piece) {
+        ArrayList<String> res = new ArrayList<>();
+
+        ConnectivityInspector<String, DefaultEdge> ci = new ConnectivityInspector<>(graph);
+
+        Set<String> set = ci.connectedSetOf(piece);
+
+        res.addAll(set);
 
         return res;
     }
