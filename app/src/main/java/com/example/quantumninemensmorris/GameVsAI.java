@@ -18,6 +18,7 @@ import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 
@@ -113,7 +114,6 @@ public class GameVsAI extends Activity {
                                     xPiecesPlaced--;
                                     xPieces++;
                                     placePiece(1, tv);
-                                    board.set(textViews.indexOf(tv), 3);
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
@@ -124,7 +124,6 @@ public class GameVsAI extends Activity {
                                     oPiecesPlaced--;
                                     oPieces++;
                                     placePiece(0, tv);
-                                    board.set(textViews.indexOf(tv), 3);
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
@@ -600,7 +599,7 @@ public class GameVsAI extends Activity {
 
     private Boolean boxIsEmpty(Integer box) {
         Boolean res = false;
-        if (board.get(box).equals(2)) {
+        if (board.get(box).equals(2) || board.get(box).equals(3)) {
             res = true;
         }
         return res;
@@ -614,6 +613,7 @@ public class GameVsAI extends Activity {
                 collapse();
             } else {
                 tv.setText(tv.getText() + " " + oPiecesRemaining.get(0));
+                board.set(textViews.indexOf(tv), 3);
             }
             oPiecesRemaining.remove(0);
         } else {
@@ -623,6 +623,7 @@ public class GameVsAI extends Activity {
                 collapse();
             } else {
                 tv.setText(tv.getText() + " " + xPiecesRemaining.get(0));
+                board.set(textViews.indexOf(tv), 3);
             }
             xPiecesRemaining.remove(0);
         }
@@ -711,16 +712,15 @@ public class GameVsAI extends Activity {
 
                     if (vertices.indexOf(vertex) == vertices.size() - 1) {
                         isValid = true;
-
                     }
                 }
             }
 
-
-
             for(String vertex : vertices) {
                 graph.removeVertex(vertex);
             }
+
+            deleteRemainingQuantumPieces();
             collapsePieces = new ArrayList<>();
         }
 
@@ -751,6 +751,39 @@ public class GameVsAI extends Activity {
         res.addAll(set);
 
         return res;
+    }
+
+    private void deleteRemainingQuantumPieces() {
+        HashMap<String, Integer> qp = new HashMap<>();
+
+        for(TextView tv: textViews) {
+            String[] pieces = tv.getText().toString().split(" ");
+            for (String piece : pieces) {
+                if (!piece.equals("") && piece.length() > 1) {
+                    if (qp.containsKey(piece)) {
+                        Integer count = qp.get(piece);
+                        count++;
+                        qp.put(piece, count);
+                    } else {
+                        qp.put(piece, 1);
+                    }
+                }
+            }
+        }
+
+        for(String piece: qp.keySet()) {
+            System.out.println(qp.get(piece));
+            if(qp.get(piece).equals(1)) {
+                for (TextView tv : textViews) {
+                    if(tv.getText().toString().contains(piece)) {
+                        tv.setText("");
+                        board.set(textViews.indexOf(tv), 2);
+                    }
+                }
+            }
+        }
+
+
     }
 
 }
