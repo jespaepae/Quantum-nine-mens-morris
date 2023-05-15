@@ -169,10 +169,14 @@ public class GameVsAI extends Activity {
                                     if(tv.getText().toString().equals("")) {
                                         board.set(moving, 2);
                                         textViews.get(moving).setText("");
+                                        board.set(textViews.indexOf(tv), 1);
+                                        tv.setText("X");
+                                    } else {
+                                        board.set(textViews.indexOf(tv), 0);
+                                        tv.setText("O");
                                     }
                                     xPiecesPlaced--;
                                     xPieces++;
-                                    board.set(textViews.indexOf(tv), 1);
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
@@ -184,17 +188,20 @@ public class GameVsAI extends Activity {
                                     if(tv.getText().toString().equals("")) {
                                         board.set(moving, 2);
                                         textViews.get(moving).setText("");
+                                        board.set(textViews.indexOf(tv), 0);
+                                        tv.setText("O");
+                                    } else {
+                                        board.set(textViews.indexOf(tv), 1);
+                                        tv.setText("X");
                                     }
                                     oPiecesPlaced--;
                                     oPieces++;
-                                    board.set(textViews.indexOf(tv), 0);
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
                                         Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                tv.setText(turn);
                                 if(!newMill)choosePlayer();
                                 choosePhase();
                                 showTurn();
@@ -226,17 +233,22 @@ public class GameVsAI extends Activity {
                                 moving = textViews.indexOf(tv);
                                 tv.setTypeface(null, Typeface.BOLD);
                                 Toast.makeText(GameVsAI.this, "Moving piece", Toast.LENGTH_SHORT).show();
-                            } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))) {
+                            } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))
+                                    && !moving.equals(textViews.indexOf(tv))) {
                                 if(turn.equals("X")) {
                                     millsBefore = numberOfMills(1);
                                     collapseMoving(tv);
                                     if(tv.getText().toString().equals("")) {
                                         board.set(moving, 2);
                                         textViews.get(moving).setText("");
+                                        board.set(textViews.indexOf(tv), 1);
+                                        tv.setText("X");
+                                    } else {
+                                        board.set(textViews.indexOf(tv), 0);
+                                        tv.setText("O");
                                     }
                                     xPiecesPlaced--;
                                     xPieces++;
-                                    board.set(textViews.indexOf(tv), 1);
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
@@ -248,17 +260,20 @@ public class GameVsAI extends Activity {
                                     if(tv.getText().toString().equals("")) {
                                         board.set(moving, 2);
                                         textViews.get(moving).setText("");
+                                        board.set(textViews.indexOf(tv), 0);
+                                        tv.setText("O");
+                                    } else {
+                                        board.set(textViews.indexOf(tv), 1);
+                                        tv.setText("X");
                                     }
                                     oPiecesPlaced--;
                                     oPieces++;
-                                    board.set(textViews.indexOf(tv), 0);
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
                                         Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                tv.setText(turn);
                                 if(!newMill)choosePlayer();
                                 choosePhase();
                                 showTurn();
@@ -822,9 +837,7 @@ public class GameVsAI extends Activity {
     }
 
     private void collapseMoving(TextView tv) {
-        if(tv.getText().toString().equals("")) {
-
-        } else {
+        if(!tv.getText().toString().equals("")) {
             String[] pieces = tv.getText().toString().split(" ");
             for(String piece : pieces) {
                 if(piece.length() != 0) {
@@ -878,7 +891,6 @@ public class GameVsAI extends Activity {
                     }
 
                     deleteRemainingQuantumPieces();
-
 
                     break;
                 }
