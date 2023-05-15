@@ -108,7 +108,7 @@ public class GameVsAI extends Activity {
                     tv.setTextSize(12);
                     switch (phase) {
                         case "Placing":
-                            if (!newMill) {
+                            if (!newMill && !tv.getText().equals("O") && !tv.getText().equals("X")) {
                                 if(turn.equals("X") && !tv.getText().toString().trim().contains(xPiecesRemaining.get(0))) {
                                     millsBefore = numberOfMills(1);
                                     xPiecesPlaced--;
@@ -151,15 +151,18 @@ public class GameVsAI extends Activity {
                             }
                             break;
                         case "Moving":
-                            if(!tv.getText().equals("") && tv.getText().equals(turn) && moving < 0) {
+                            if(tv.getText().equals(turn) && moving < 0 && availableMovesOf(textViews.indexOf(tv)).size() > 1) {
                                 moving = textViews.indexOf(tv);
                                 tv.setTypeface(null, Typeface.BOLD);
                                 Toast.makeText(GameVsAI.this, "Moving piece", Toast.LENGTH_SHORT).show();
                             } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))) {
                                 if(turn.equals("X")) {
-                                    board.set(moving, 2);
-                                    textViews.get(moving).setText("");
                                     millsBefore = numberOfMills(1);
+                                    collapseMoving(tv);
+                                    if(tv.getText().toString().equals("")) {
+                                        board.set(moving, 2);
+                                        textViews.get(moving).setText("");
+                                    }
                                     xPiecesPlaced--;
                                     xPieces++;
                                     board.set(textViews.indexOf(tv), 1);
@@ -169,9 +172,12 @@ public class GameVsAI extends Activity {
                                         Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
-                                    board.set(moving, 2);
-                                    textViews.get(moving).setText("");
                                     millsBefore = numberOfMills(0);
+                                    collapseMoving(tv);
+                                    if(tv.getText().toString().equals("")) {
+                                        board.set(moving, 2);
+                                        textViews.get(moving).setText("");
+                                    }
                                     oPiecesPlaced--;
                                     oPieces++;
                                     board.set(textViews.indexOf(tv), 0);
@@ -193,18 +199,87 @@ public class GameVsAI extends Activity {
                                     tv.setText("");
                                     choosePlayer();
                                     showTurn();
+                                    choosePhase();
+                                    showPhase();
                                     board.set(textViews.indexOf(tv), 2);
                                     newMill = false;
                                 } else if (turn.equals("O") && tv.getText().equals("X")) {
                                     tv.setText("");
                                     choosePlayer();
                                     showTurn();
+                                    choosePhase();
+                                    showPhase();
                                     board.set(textViews.indexOf(tv), 2);
                                     newMill = false;
                                 }
                             }
                             break;
                         case "Flying":
+                            if(tv.getText().equals(turn) && moving < 0 && availableMovesOf(textViews.indexOf(tv)).size() > 1) {
+                                moving = textViews.indexOf(tv);
+                                tv.setTypeface(null, Typeface.BOLD);
+                                Toast.makeText(GameVsAI.this, "Moving piece", Toast.LENGTH_SHORT).show();
+                            } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))) {
+                                if(turn.equals("X")) {
+                                    millsBefore = numberOfMills(1);
+                                    collapseMoving(tv);
+                                    if(tv.getText().toString().equals("")) {
+                                        board.set(moving, 2);
+                                        textViews.get(moving).setText("");
+                                    }
+                                    xPiecesPlaced--;
+                                    xPieces++;
+                                    board.set(textViews.indexOf(tv), 1);
+                                    millsAfter = numberOfMills(1);
+                                    if(millsAfter - millsBefore > 0) {
+                                        newMill = true;
+                                        Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    millsBefore = numberOfMills(0);
+                                    collapseMoving(tv);
+                                    if(tv.getText().toString().equals("")) {
+                                        board.set(moving, 2);
+                                        textViews.get(moving).setText("");
+                                    }
+                                    oPiecesPlaced--;
+                                    oPieces++;
+                                    board.set(textViews.indexOf(tv), 0);
+                                    millsAfter = numberOfMills(0);
+                                    if(millsAfter - millsBefore > 0) {
+                                        newMill = true;
+                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                tv.setText(turn);
+                                if(!newMill)choosePlayer();
+                                choosePhase();
+                                showTurn();
+                                showPhase();
+                                textViews.get(moving).setTypeface(null, Typeface.NORMAL);
+                                moving = -1;
+                            } else if(newMill) {
+                                if(turn.equals("X") && tv.getText().equals("O")) {
+                                    tv.setText("");
+                                    choosePlayer();
+                                    showTurn();
+                                    choosePhase();
+                                    showPhase();
+                                    board.set(textViews.indexOf(tv), 2);
+                                    newMill = false;
+                                } else if (turn.equals("O") && tv.getText().equals("X")) {
+                                    tv.setText("");
+                                    choosePlayer();
+                                    showTurn();
+                                    choosePhase();
+                                    showPhase();
+                                    board.set(textViews.indexOf(tv), 2);
+                                    newMill = false;
+                                }
+                            }
+                            if(numberOfPiecesOf("X") < 3 || numberOfPiecesOf("O") < 3) {
+
+                            }
                             break;
                         default:
                             finish();
@@ -248,6 +323,10 @@ public class GameVsAI extends Activity {
         if(phase.equals("Placing")){
             if(xPiecesPlaced.equals(0) && oPiecesPlaced.equals(0)) {
                 phase = "Moving";
+            }
+        } else if (phase.equals("Moving")){
+            if(numberOfPiecesOf("X").equals(3) || numberOfPiecesOf("O").equals(3)) {
+                phase = "Flying";
             }
         }
     }
@@ -330,270 +409,279 @@ public class GameVsAI extends Activity {
 
     private ArrayList<Integer> availableMovesOf(Integer piece) {
         ArrayList<Integer> res = new ArrayList<>();
-        switch (piece) {
-            case 0:
-                res.add(0);
-                if(boxIsEmpty(1)) {
-                    res.add(1);
-                }
-                if (boxIsEmpty(9)){
-                    res.add(9);
-                }
-                break;
-            case 1:
-                res.add(1);
-                if(boxIsEmpty(0)) {
+        if(numberOfPiecesOf(textViews.get(piece).getText().toString()) > 3) {
+            switch (piece) {
+                case 0:
                     res.add(0);
-                }
-                if (boxIsEmpty(2)){
-                    res.add(2);
-                }
-                if (boxIsEmpty(4)){
-                    res.add(4);
-                }
-                break;
-            case 2:
-                res.add(2);
-                if(boxIsEmpty(1)) {
+                    if(boxIsEmpty(1)) {
+                        res.add(1);
+                    }
+                    if (boxIsEmpty(9)){
+                        res.add(9);
+                    }
+                    break;
+                case 1:
                     res.add(1);
-                }
-                if (boxIsEmpty(14)){
-                    res.add(14);
-                }
-                break;
-            case 3:
-                res.add(3);
-                if(boxIsEmpty(4)) {
-                    res.add(4);
-                }
-                if (boxIsEmpty(10)){
-                    res.add(10);
-                }
-                break;
-            case 4:
-                res.add(4);
-                if(boxIsEmpty(1)) {
-                    res.add(1);
-                }
-                if (boxIsEmpty(3)){
-                    res.add(3);
-                }
-                if (boxIsEmpty(5)){
-                    res.add(5);
-                }
-                if (boxIsEmpty(7)) {
-                    res.add(7);
-                }
-                break;
-            case 5:
-                res.add(5);
-                if(boxIsEmpty(4)) {
-                    res.add(4);
-                }
-                if (boxIsEmpty(13)){
-                    res.add(13);
-                }
-                break;
-            case 6:
-                res.add(6);
-                if(boxIsEmpty(7)) {
-                    res.add(7);
-                }
-                if (boxIsEmpty(11)){
-                    res.add(11);
-                }
-                break;
-            case 7:
-                res.add(7);
-                if(boxIsEmpty(4)) {
-                    res.add(4);
-                }
-                if (boxIsEmpty(6)){
-                    res.add(6);
-                }
-                if (boxIsEmpty(8)){
-                    res.add(8);
-                }
-                break;
-            case 8:
-                res.add(8);
-                if(boxIsEmpty(7)) {
-                    res.add(7);
-                }
-                if (boxIsEmpty(12)){
-                    res.add(12);
-                }
-                break;
-            case 9:
-                res.add(9);
-                if(boxIsEmpty(0)) {
-                    res.add(0);
-                }
-                if (boxIsEmpty(10)){
-                    res.add(10);
-                }
-                if (boxIsEmpty(21)){
-                    res.add(21);
-                }
-                break;
-            case 10:
-                res.add(10);
-                if(boxIsEmpty(3)) {
-                    res.add(3);
-                }
-                if (boxIsEmpty(9)){
-                    res.add(9);
-                }
-                if (boxIsEmpty(11)){
-                    res.add(11);
-                }
-                if (boxIsEmpty(18)) {
-                    res.add(18);
-                }
-                break;
-            case 11:
-                res.add(11);
-                if(boxIsEmpty(6)) {
-                    res.add(6);
-                }
-                if (boxIsEmpty(10)){
-                    res.add(10);
-                }
-                if (boxIsEmpty(15)){
-                    res.add(15);
-                }
-                break;
-            case 12:
-                res.add(12);
-                if(boxIsEmpty(8)) {
-                    res.add(8);
-                }
-                if (boxIsEmpty(13)){
-                    res.add(13);
-                }
-                if (boxIsEmpty(17)){
-                    res.add(17);
-                }
-                break;
-            case 13:
-                res.add(13);
-                if(boxIsEmpty(5)) {
-                    res.add(5);
-                }
-                if (boxIsEmpty(12)){
-                    res.add(12);
-                }
-                if (boxIsEmpty(14)){
-                    res.add(14);
-                }
-                if (boxIsEmpty(20)) {
-                    res.add(20);
-                }
-                break;
-            case 14:
-                res.add(14);
-                if(boxIsEmpty(2)) {
+                    if(boxIsEmpty(0)) {
+                        res.add(0);
+                    }
+                    if (boxIsEmpty(2)){
+                        res.add(2);
+                    }
+                    if (boxIsEmpty(4)){
+                        res.add(4);
+                    }
+                    break;
+                case 2:
                     res.add(2);
-                }
-                if (boxIsEmpty(13)){
-                    res.add(13);
-                }
-                if (boxIsEmpty(23)){
-                    res.add(23);
-                }
-                break;
-            case 15:
-                res.add(15);
-                if(boxIsEmpty(11)) {
-                    res.add(11);
-                }
-                if (boxIsEmpty(16)){
-                    res.add(16);
-                }
-                break;
-            case 16:
-                res.add(16);
-                if(boxIsEmpty(15)) {
-                    res.add(15);
-                }
-                if (boxIsEmpty(17)){
-                    res.add(17);
-                }
-                if (boxIsEmpty(19)){
-                    res.add(19);
-                }
-                break;
-            case 17:
-                res.add(17);
-                if(boxIsEmpty(12)) {
-                    res.add(12);
-                }
-                if (boxIsEmpty(16)){
-                    res.add(16);
-                }
-                break;
-            case 18:
-                res.add(18);
-                if(boxIsEmpty(10)) {
-                    res.add(10);
-                }
-                if (boxIsEmpty(19)){
-                    res.add(19);
-                }
-                break;
-            case 19:
-                res.add(19);
-                if(boxIsEmpty(16)) {
-                    res.add(16);
-                }
-                if (boxIsEmpty(18)){
-                    res.add(18);
-                }
-                if (boxIsEmpty(20)){
-                    res.add(20);
-                }
-                if (boxIsEmpty(22)) res.add(22);
-                break;
-            case 20:
-                res.add(20);
-                if(boxIsEmpty(13)) {
-                    res.add(13);
-                }
-                if (boxIsEmpty(19)){
-                    res.add(19);
-                }
-                break;
-            case 21:
-                res.add(21);
-                if(boxIsEmpty(9)) {
+                    if(boxIsEmpty(1)) {
+                        res.add(1);
+                    }
+                    if (boxIsEmpty(14)){
+                        res.add(14);
+                    }
+                    break;
+                case 3:
+                    res.add(3);
+                    if(boxIsEmpty(4)) {
+                        res.add(4);
+                    }
+                    if (boxIsEmpty(10)){
+                        res.add(10);
+                    }
+                    break;
+                case 4:
+                    res.add(4);
+                    if(boxIsEmpty(1)) {
+                        res.add(1);
+                    }
+                    if (boxIsEmpty(3)){
+                        res.add(3);
+                    }
+                    if (boxIsEmpty(5)){
+                        res.add(5);
+                    }
+                    if (boxIsEmpty(7)) {
+                        res.add(7);
+                    }
+                    break;
+                case 5:
+                    res.add(5);
+                    if(boxIsEmpty(4)) {
+                        res.add(4);
+                    }
+                    if (boxIsEmpty(13)){
+                        res.add(13);
+                    }
+                    break;
+                case 6:
+                    res.add(6);
+                    if(boxIsEmpty(7)) {
+                        res.add(7);
+                    }
+                    if (boxIsEmpty(11)){
+                        res.add(11);
+                    }
+                    break;
+                case 7:
+                    res.add(7);
+                    if(boxIsEmpty(4)) {
+                        res.add(4);
+                    }
+                    if (boxIsEmpty(6)){
+                        res.add(6);
+                    }
+                    if (boxIsEmpty(8)){
+                        res.add(8);
+                    }
+                    break;
+                case 8:
+                    res.add(8);
+                    if(boxIsEmpty(7)) {
+                        res.add(7);
+                    }
+                    if (boxIsEmpty(12)){
+                        res.add(12);
+                    }
+                    break;
+                case 9:
                     res.add(9);
-                }
-                if (boxIsEmpty(22)){
-                    res.add(22);
-                }
-                break;
-            case 22:
-                res.add(22);
-                if(boxIsEmpty(19)) {
-                    res.add(19);
-                }
-                if (boxIsEmpty(21)){
-                    res.add(21);
-                }
-                if (boxIsEmpty(23)){
-                    res.add(23);
-                }
-                break;
-            case 23:
-                res.add(23);
-                if(boxIsEmpty(14)) {
+                    if(boxIsEmpty(0)) {
+                        res.add(0);
+                    }
+                    if (boxIsEmpty(10)){
+                        res.add(10);
+                    }
+                    if (boxIsEmpty(21)){
+                        res.add(21);
+                    }
+                    break;
+                case 10:
+                    res.add(10);
+                    if(boxIsEmpty(3)) {
+                        res.add(3);
+                    }
+                    if (boxIsEmpty(9)){
+                        res.add(9);
+                    }
+                    if (boxIsEmpty(11)){
+                        res.add(11);
+                    }
+                    if (boxIsEmpty(18)) {
+                        res.add(18);
+                    }
+                    break;
+                case 11:
+                    res.add(11);
+                    if(boxIsEmpty(6)) {
+                        res.add(6);
+                    }
+                    if (boxIsEmpty(10)){
+                        res.add(10);
+                    }
+                    if (boxIsEmpty(15)){
+                        res.add(15);
+                    }
+                    break;
+                case 12:
+                    res.add(12);
+                    if(boxIsEmpty(8)) {
+                        res.add(8);
+                    }
+                    if (boxIsEmpty(13)){
+                        res.add(13);
+                    }
+                    if (boxIsEmpty(17)){
+                        res.add(17);
+                    }
+                    break;
+                case 13:
+                    res.add(13);
+                    if(boxIsEmpty(5)) {
+                        res.add(5);
+                    }
+                    if (boxIsEmpty(12)){
+                        res.add(12);
+                    }
+                    if (boxIsEmpty(14)){
+                        res.add(14);
+                    }
+                    if (boxIsEmpty(20)) {
+                        res.add(20);
+                    }
+                    break;
+                case 14:
                     res.add(14);
-                }
-                if (boxIsEmpty(22)){
+                    if(boxIsEmpty(2)) {
+                        res.add(2);
+                    }
+                    if (boxIsEmpty(13)){
+                        res.add(13);
+                    }
+                    if (boxIsEmpty(23)){
+                        res.add(23);
+                    }
+                    break;
+                case 15:
+                    res.add(15);
+                    if(boxIsEmpty(11)) {
+                        res.add(11);
+                    }
+                    if (boxIsEmpty(16)){
+                        res.add(16);
+                    }
+                    break;
+                case 16:
+                    res.add(16);
+                    if(boxIsEmpty(15)) {
+                        res.add(15);
+                    }
+                    if (boxIsEmpty(17)){
+                        res.add(17);
+                    }
+                    if (boxIsEmpty(19)){
+                        res.add(19);
+                    }
+                    break;
+                case 17:
+                    res.add(17);
+                    if(boxIsEmpty(12)) {
+                        res.add(12);
+                    }
+                    if (boxIsEmpty(16)){
+                        res.add(16);
+                    }
+                    break;
+                case 18:
+                    res.add(18);
+                    if(boxIsEmpty(10)) {
+                        res.add(10);
+                    }
+                    if (boxIsEmpty(19)){
+                        res.add(19);
+                    }
+                    break;
+                case 19:
+                    res.add(19);
+                    if(boxIsEmpty(16)) {
+                        res.add(16);
+                    }
+                    if (boxIsEmpty(18)){
+                        res.add(18);
+                    }
+                    if (boxIsEmpty(20)){
+                        res.add(20);
+                    }
+                    if (boxIsEmpty(22)) res.add(22);
+                    break;
+                case 20:
+                    res.add(20);
+                    if(boxIsEmpty(13)) {
+                        res.add(13);
+                    }
+                    if (boxIsEmpty(19)){
+                        res.add(19);
+                    }
+                    break;
+                case 21:
+                    res.add(21);
+                    if(boxIsEmpty(9)) {
+                        res.add(9);
+                    }
+                    if (boxIsEmpty(22)){
+                        res.add(22);
+                    }
+                    break;
+                case 22:
                     res.add(22);
+                    if(boxIsEmpty(19)) {
+                        res.add(19);
+                    }
+                    if (boxIsEmpty(21)){
+                        res.add(21);
+                    }
+                    if (boxIsEmpty(23)){
+                        res.add(23);
+                    }
+                    break;
+                case 23:
+                    res.add(23);
+                    if(boxIsEmpty(14)) {
+                        res.add(14);
+                    }
+                    if (boxIsEmpty(22)){
+                        res.add(22);
+                    }
+                    break;
+            }
+        } else {
+            for(int i = 0; i < 24; i++) {
+                if(boxIsEmpty(i)) {
+                    res.add(i);
                 }
-                break;
+            }
         }
+
         return res;
     }
 
@@ -726,6 +814,71 @@ public class GameVsAI extends Activity {
 
     }
 
+    private void collapseMoving(TextView tv) {
+        if(tv.getText().toString().equals("")) {
+
+        } else {
+            String[] pieces = tv.getText().toString().split(" ");
+            for(String piece : pieces) {
+                if(piece.length() != 0) {
+                    ArrayList<String> vertices = getConnectedVertexOf(piece);
+
+                    Boolean isValid = false;
+                    ArrayList<String> textViewsCopy = new ArrayList<>();
+                    ArrayList<Integer> boardCopy = new ArrayList<>(board);
+                    for(TextView t : textViews) {
+                        textViewsCopy.add(t.getText().toString());
+                    }
+
+                    while(!isValid) {
+
+                        for(TextView t : textViews) {
+                            t.setText(textViewsCopy.get(textViews.indexOf(t)));
+                        }
+                        board = new ArrayList<>();
+                        board.addAll(boardCopy);
+
+                        for(String vertex : vertices) {
+                            ArrayList<Integer> indexesToCollapse = getIndexesOfPiece(vertex);
+
+                            Integer index;
+
+                            if(indexesToCollapse.size() > 1) {
+                                index = indexesToCollapse.get(random.nextInt(2));
+                            } else if (indexesToCollapse.size() == 1){
+                                index = indexesToCollapse.get(0);
+                            } else {
+                                break;
+                            }
+
+                            String collapsePiece = vertex.substring(0,1);
+
+                            textViews.get(index).setText(collapsePiece);
+                            if(collapsePiece.equals("X")) {
+                                board.set(index, 1);
+                            } else {
+                                board.set(index, 0);
+                            }
+
+                            if (vertices.indexOf(vertex) == vertices.size() - 1) {
+                                isValid = true;
+                            }
+                        }
+                    }
+
+                    for(String vertex : vertices) {
+                        graph.removeVertex(vertex);
+                    }
+
+                    deleteRemainingQuantumPieces();
+
+
+                    break;
+                }
+            }
+        }
+    }
+
     private ArrayList<Integer> getIndexesOfPiece(String piece) {
         ArrayList<Integer> res = new ArrayList<>();
 
@@ -772,7 +925,6 @@ public class GameVsAI extends Activity {
         }
 
         for(String piece: qp.keySet()) {
-            System.out.println(qp.get(piece));
             if(qp.get(piece).equals(1)) {
                 for (TextView tv : textViews) {
                     if(tv.getText().toString().contains(piece)) {
@@ -782,8 +934,20 @@ public class GameVsAI extends Activity {
                 }
             }
         }
+    }
 
-
+    private Integer numberOfPiecesOf(String piece) {
+        Integer res = 0;
+        Integer quantumPieces = 0;
+        for(TextView tv : textViews) {
+            if (tv.getText().toString().equals(piece)) {
+                res ++;
+            } else if (tv.getText().toString().contains(piece)) {
+                quantumPieces++;
+            }
+        }
+        res += quantumPieces/2;
+        return res;
     }
 
 }
