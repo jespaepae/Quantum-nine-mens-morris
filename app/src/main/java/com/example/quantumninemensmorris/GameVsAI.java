@@ -1,10 +1,16 @@
 package com.example.quantumninemensmorris;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -155,7 +161,8 @@ public class GameVsAI extends Activity {
                                 moving = textViews.indexOf(tv);
                                 tv.setTypeface(null, Typeface.BOLD);
                                 Toast.makeText(GameVsAI.this, "Moving piece", Toast.LENGTH_SHORT).show();
-                            } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))) {
+                            } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))
+                                        && !moving.equals(textViews.indexOf(tv))) {
                                 if(turn.equals("X")) {
                                     millsBefore = numberOfMills(1);
                                     collapseMoving(tv);
@@ -278,7 +285,7 @@ public class GameVsAI extends Activity {
                                 }
                             }
                             if(numberOfPiecesOf("X") < 3 || numberOfPiecesOf("O") < 3) {
-
+                                endGame(v);
                             }
                             break;
                         default:
@@ -948,6 +955,44 @@ public class GameVsAI extends Activity {
         }
         res += quantumPieces/2;
         return res;
+    }
+
+    private void endGame(View view) {
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_window, findViewById(R.id.popUpWindow));
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = false; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window token
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        TextView popupWindowText = popupView.findViewById(R.id.popUpWindow);
+        if(numberOfPiecesOf("X") < 3) {
+            popupWindowText.setText("Player O Wins!!");
+        } else {
+            popupWindowText.setText("Player X Wins!!");
+        }
+
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+
+
     }
 
 }
