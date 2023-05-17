@@ -970,19 +970,17 @@ public class GameVsAI extends Activity {
     }
 
     private void endGame(View view) {
-        // inflate the layout of the popup window
+
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_window, findViewById(R.id.popUpWindow));
 
-        // create the popup window
+
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
         boolean focusable = false; // lets taps outside the popup also dismiss it
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window token
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
         TextView popupWindowText = popupView.findViewById(R.id.popUpWindow);
@@ -992,8 +990,6 @@ public class GameVsAI extends Activity {
             popupWindowText.setText("Player X Wins!!");
         }
 
-
-        // dismiss the popup window when touched
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
