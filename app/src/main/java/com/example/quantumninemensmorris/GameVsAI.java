@@ -21,6 +21,7 @@ import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,18 +126,57 @@ public class GameVsAI extends Activity {
                                         newMill = true;
                                         Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
-                                } else if (turn.equals("O") && !tv.getText().toString().trim().contains(oPiecesRemaining.get(0))){
-                                    millsBefore = numberOfMills(0);
-                                    oPiecesPlaced--;
-                                    oPieces++;
-                                    placePiece(0, tv);
-                                    millsAfter = numberOfMills(0);
-                                    if(millsAfter - millsBefore > 0) {
-                                        newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
-                                    }
                                 }
-                                if(!newMill && (xPiecesPlaced % 2 == 0 && oPiecesPlaced % 2 == 0)) choosePlayer();
+                                if(!newMill && (xPiecesPlaced % 2 == 0 && oPiecesPlaced % 2 == 0)){
+                                    choosePlayer();
+                                    ArrayList<Integer> boardCopy = new ArrayList<>(board);
+                                    ArrayList<TextView> textViewsCopy = new ArrayList<>(textViews);
+                                    for (int i=0;i<textViews.size();i++){
+                                        TextView tv = textViews.get(i);
+                                        TextView tvCopy = new TextView(GameVsAI.this);
+                                        tvCopy.setText(tv.getText());
+                                        textViewsCopy.set(i, tvCopy);
+                                    }
+                                    ArrayList<String> xPiecesRemainingCopy = new ArrayList<>(xPiecesRemaining);
+                                    ArrayList<String> oPiecesRemainingCopy = new ArrayList<>(oPiecesRemaining);
+                                    Graph<String, DefaultEdge> graphCopy = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
+                                    for (String vertex : graph.vertexSet()) {
+                                        graphCopy.addVertex(vertex);
+                                    }
+                                    for (DefaultEdge edge : graph.edgeSet()) {
+                                        String source = graph.getEdgeSource(edge);
+                                        String target = graph.getEdgeTarget(edge);
+                                        graphCopy.addEdge(source, target);
+                                    }
+                                    ArrayList<String> collapsePiecesCopy = new ArrayList<>(collapsePieces);
+                                    ArrayList<Integer> AIMoves = getBestMove(boardCopy, textViewsCopy, 5, Integer.MIN_VALUE, Integer.MAX_VALUE, true, phase,  xPiecesRemainingCopy, oPiecesRemainingCopy,  graphCopy, collapsePiecesCopy);
+
+                                    Integer numberOfMillBefore = numberOfMillsAI(0, board);
+                                    addVertexAndEdgesToGraphAI(oPiecesRemaining.get(0), textViews.get(AIMoves.get(0)), graph);
+                                    textViews.get(AIMoves.get(0)).setText(textViews.get(AIMoves.get(0)).getText() + " " + oPiecesRemaining.get(0));
+                                    oPiecesRemaining.remove(0);
+                                    board.set(AIMoves.get(0), 3);
+                                    addVertexAndEdgesToGraphAI(oPiecesRemaining.get(0), textViews.get(AIMoves.get(1)), graph);
+                                    textViews.get(AIMoves.get(1)).setText(textViews.get(AIMoves.get(1)).getText() + " " + oPiecesRemaining.get(0));
+                                    oPiecesRemaining.remove(0);
+                                    board.set(AIMoves.get(1), 3);
+                                    if (isEntangled(oPiecesRemaining.get(0), textViews.get(AIMoves.get(1)))){
+                                        collapseAI(board, textViews, collapsePieces);
+                                    }
+                                    Integer numberOfMillAfter = numberOfMillsAI(0, board);
+                                    if (numberOfMillAfter>numberOfMillBefore){
+                                        ArrayList<Integer> availableBoxesAi = new ArrayList<Integer>();
+                                        for (TextView textv : textViews){
+                                            if (textv.getText().equals("X")){
+                                                availableBoxesAi.add(textViews.indexOf(textv));
+                                            }
+                                        }
+                                        int aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                        textViews.get(aitv).setText("");
+                                        board.set(textViews.indexOf(aitv), 2);
+                                    }
+                                    choosePlayer();
+                                }
                                 choosePhase();
                                 showTurn();
                                 showPhase();
@@ -147,13 +187,59 @@ public class GameVsAI extends Activity {
                                     showTurn();
                                     board.set(textViews.indexOf(tv), 2);
                                     newMill = false;
-                                } else if (turn.equals("O") && tv.getText().equals("X")) {
-                                    tv.setText("");
-                                    choosePlayer();
-                                    showTurn();
-                                    board.set(textViews.indexOf(tv), 2);
-                                    newMill = false;
                                 }
+                                //turno de IA
+                                ArrayList<Integer> boardCopy = new ArrayList<>(board);
+                                ArrayList<TextView> textViewsCopy = new ArrayList<>(textViews);
+                                for (int i=0;i<textViews.size();i++){
+                                    TextView tv = textViews.get(i);
+                                    TextView tvCopy = new TextView(GameVsAI.this);
+                                    tvCopy.setText(tv.getText());
+                                    textViewsCopy.set(i, tvCopy);
+                                }
+                                ArrayList<String> xPiecesRemainingCopy = new ArrayList<>(xPiecesRemaining);
+                                ArrayList<String> oPiecesRemainingCopy = new ArrayList<>(oPiecesRemaining);
+                                Graph<String, DefaultEdge> graphCopy = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
+                                for (String vertex : graph.vertexSet()) {
+                                    graphCopy.addVertex(vertex);
+                                }
+                                for (DefaultEdge edge : graph.edgeSet()) {
+                                    String source = graph.getEdgeSource(edge);
+                                    String target = graph.getEdgeTarget(edge);
+                                    graphCopy.addEdge(source, target);
+                                }
+                                ArrayList<String> collapsePiecesCopy = new ArrayList<>(collapsePieces);
+                                ArrayList<Integer> AIMoves = getBestMove(boardCopy, textViewsCopy, 5, Integer.MIN_VALUE, Integer.MAX_VALUE, true, phase,  xPiecesRemainingCopy, oPiecesRemainingCopy,  graphCopy, collapsePiecesCopy);
+
+                                Integer numberOfMillBefore = numberOfMillsAI(0, board);
+                                addVertexAndEdgesToGraphAI(oPiecesRemaining.get(0), textViews.get(AIMoves.get(0)), graph);
+                                textViews.get(AIMoves.get(0)).setText(oPiecesRemaining.get(0));
+                                oPiecesRemaining.remove(0);
+                                board.set(AIMoves.get(0), 3);
+                                addVertexAndEdgesToGraphAI(oPiecesRemaining.get(0), textViews.get(AIMoves.get(1)), graph);
+                                textViews.get(AIMoves.get(1)).setText(oPiecesRemaining.get(0));
+                                oPiecesRemaining.remove(0);
+                                board.set(AIMoves.get(1), 3);
+                                if (isEntangled(oPiecesRemaining.get(0), textViews.get(AIMoves.get(1)))){
+                                    collapseAI(board, textViews, collapsePieces);
+                                }
+                                Integer numberOfMillAfter = numberOfMillsAI(0, board);
+                                if (numberOfMillAfter>numberOfMillBefore){
+                                    ArrayList<Integer> availableBoxesAi = new ArrayList<Integer>();
+                                    for (TextView textv : textViews){
+                                        if (textv.getText().equals("X")){
+                                            availableBoxesAi.add(textViews.indexOf(textv));
+                                        }
+                                    }
+                                    int aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                    textViews.get(aitv).setText("");
+                                    board.set(textViews.indexOf(aitv), 2);
+                                }
+                                choosePlayer();
+                                choosePhase();
+                                showTurn();
+                                showPhase();
+
                             }
                             break;
                         case "Moving":
@@ -202,7 +288,10 @@ public class GameVsAI extends Activity {
                                         Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                if(!newMill)choosePlayer();
+                                if(!newMill){
+                                    choosePlayer();
+                                    //TURNO IA
+                                }
                                 choosePhase();
                                 showTurn();
                                 showPhase();
@@ -226,6 +315,7 @@ public class GameVsAI extends Activity {
                                     board.set(textViews.indexOf(tv), 2);
                                     newMill = false;
                                 }
+                                //TURNO IA
                             }
                             break;
                         case "Flying":
@@ -1005,6 +1095,316 @@ public class GameVsAI extends Activity {
         });
 
 
+    }
+
+    private Integer minimax_alpha_beta(ArrayList<Integer> board, ArrayList<TextView> textViews, int depth, int alfa, int beta, boolean isMaximizing, String phase, ArrayList<String> xPiecesRemaining, ArrayList<String> oPiecesRemaining, Graph<String, DefaultEdge> graph, ArrayList<String> collapsePieces) {
+
+        if (depth == 0 || isEndOfGame(textViews)) {
+            return evaluate(board);
+        }
+
+        //if(phase == "Placing"){
+            if (isMaximizing) {
+                Integer bestValue = Integer.MIN_VALUE;
+                for (Integer place : getAvailablePlaces(board)) {
+                    for (Integer place2 : getAvailablePlaces(board)){
+                        if(place!=place2 && place2 > place) {
+                            Integer numberOfMillBefore = numberOfMillsAI(0, board);
+                            addVertexAndEdgesToGraphAI(oPiecesRemaining.get(0), textViews.get(place), graph);
+                            textViews.get(place).setText(textViews.get(place).getText() + " " + oPiecesRemaining.get(0));
+                            oPiecesRemaining.remove(0);
+                            board.set(place, 3);
+                            addVertexAndEdgesToGraphAI(oPiecesRemaining.get(0), textViews.get(place2), graph);
+                            textViews.get(place2).setText(textViews.get(place2).getText() + " " + oPiecesRemaining.get(0));
+                            oPiecesRemaining.remove(0);
+                            board.set(place2, 3);
+                            if (isEntangledAI(oPiecesRemaining.get(0), textViews.get(place2), textViews, collapsePieces, graph)){
+                                collapseAI(board, textViews, collapsePieces);
+                            }
+                            Integer numberOfMillAfter = numberOfMillsAI(0, board);
+                            if (numberOfMillAfter>numberOfMillBefore){
+                                ArrayList<Integer> availableBoxesAi = new ArrayList<Integer>();
+                                for (TextView textv : textViews){
+                                    if (textv.getText().equals("X")){
+                                        availableBoxesAi.add(textViews.indexOf(textv));
+                                    }
+                                }
+                                int aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                textViews.get(aitv).setText("");
+                                board.set(textViews.indexOf(aitv), 2);
+                            }
+                            Integer valuePlacing = minimax_alpha_beta(board, textViews, depth - 1, alfa, beta, false, phase, xPiecesRemaining, oPiecesRemaining, graph, collapsePieces);
+                            bestValue = Math.max(bestValue, valuePlacing);
+                            alfa = Math.max(alfa, bestValue);
+                            if (beta <= alfa) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                return bestValue;
+            } else {
+                Integer bestValue = Integer.MAX_VALUE;
+                for (Integer place : getAvailablePlaces(board)) {
+                    for (Integer place2 : getAvailablePlaces(board)){
+                        if(place!=place2 && place2 > place) {
+
+                            Integer numberOfMillBefore = numberOfMillsAI(1, board);
+                            addVertexAndEdgesToGraphAI(xPiecesRemaining.get(0), textViews.get(place), graph);
+                            textViews.get(place).setText(textViews.get(place).getText() + " " + xPiecesRemaining.get(0));
+                            xPiecesRemaining.remove(0);
+                            board.set(place, 3);
+                            addVertexAndEdgesToGraphAI(xPiecesRemaining.get(0), textViews.get(place2), graph);
+                            textViews.get(place2).setText(textViews.get(place2).getText() + " " + xPiecesRemaining.get(0));
+                            xPiecesRemaining.remove(0);
+                            board.set(place2, 3);
+                            if (isEntangledAI(xPiecesRemaining.get(0), textViews.get(place2), textViews, collapsePieces, graph)){
+                                collapseAI(board, textViews, collapsePieces);
+                            }
+                            Integer numberOfMillAfter = numberOfMillsAI(1, board);
+                            if (numberOfMillAfter>numberOfMillBefore){
+                                ArrayList<Integer> availableBoxesAi = new ArrayList<Integer>();
+                                for (TextView textv : textViews){
+                                    if (textv.getText().equals("O")){
+                                        availableBoxesAi.add(textViews.indexOf(textv));
+                                    }
+                                }
+                                int aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                textViews.get(aitv).setText("");
+                                board.set(textViews.indexOf(aitv), 2);
+                            }
+
+                            Integer valuePlacing = minimax_alpha_beta(board, textViews, depth - 1, alfa, beta, true, phase, xPiecesRemaining, oPiecesRemaining, graph, collapsePieces);
+                            bestValue = Math.min(bestValue, valuePlacing);
+                            beta = Math.min(alfa, bestValue);
+                            if (beta <= alfa) {
+                                break;
+                            }
+                        }
+                    }
+
+                }
+                return bestValue;
+            }
+        //}
+    }
+
+    private ArrayList<Integer> getBestMove(ArrayList<Integer> board, ArrayList<TextView> textViews, int depth, int alfa, int beta, boolean isMaximizing, String phase, ArrayList<String> xPiecesRemaining, ArrayList<String> oPiecesRemaining, Graph<String, DefaultEdge> graph, ArrayList<String> collapsePieces) {
+        Integer bestValue = Integer.MIN_VALUE;
+        ArrayList<Integer> bestMoves = new ArrayList<>();
+        for (Integer place : getAvailablePlaces(board)) {
+            for (Integer place2 : getAvailablePlaces(board)){
+                if(place!=place2) {
+                    Integer valuePlacing = minimax_alpha_beta(board, textViews, depth, alfa, beta, true, phase, xPiecesRemaining, oPiecesRemaining, graph, collapsePieces);
+                    if (valuePlacing>bestValue){
+                        bestMoves = new ArrayList<>();
+                        bestMoves.add(place);
+                        bestMoves.add(place2);
+                        bestValue = valuePlacing;
+                    }
+                }
+            }
+        }
+        return bestMoves;
+    }
+
+
+        private Boolean isEndOfGame(ArrayList<TextView> textViews){
+
+        if(numberOfPiecesOfAI("X", textViews) < 3 || numberOfPiecesOfAI("O", textViews) < 3){
+            return true;
+        }
+        Integer movements = 0;
+        for(TextView tv: textViews){
+            if(tv.getText().toString().equals("X")){
+                movements += availableMovesOf(textViews.indexOf(tv)).size();
+            }
+            if(tv.getText().toString().equals("O")){
+                movements += availableMovesOf(textViews.indexOf(tv)).size();
+            }
+        }
+        if (movements==0){
+            return true;
+        }
+        return false;
+    }
+
+    private Integer numberOfPiecesOfAI(String piece, ArrayList<TextView> textViews) {
+        Integer res = 0;
+        Integer quantumPieces = 0;
+        for(TextView tv : textViews) {
+            if (tv.getText().toString().equals(piece)) {
+                res ++;
+            } else if (tv.getText().toString().contains(piece)) {
+                quantumPieces++;
+            }
+        }
+        res += quantumPieces/2;
+        return res;
+    }
+
+    private Integer evaluate(ArrayList<Integer> board){
+        return 1;
+    }
+
+    private ArrayList<Integer> getAvailablePlaces(ArrayList<Integer> board){
+        ArrayList<Integer> availablePlaces = new ArrayList<>();
+
+        for (int i = 0; i<board.size();i++){
+            if (board.get(i) == 2 || board.get(i) == 3){
+                availablePlaces.add(i);
+            }
+        }
+        return availablePlaces;
+    }
+
+    private void addVertexAndEdgesToGraphAI(String piece, TextView tv, Graph<String, DefaultEdge> graph) {
+        graph.addVertex(piece);
+        if(!tv.getText().equals("")) {
+            String[] pieces = tv.getText().toString().split(" ");
+            for(String item : pieces) {
+                if(item.length() != 0) {
+                    graph.addEdge(item, piece);
+                }
+            }
+        }
+    }
+
+    private Boolean isEntangledAI(String piece, TextView tv, ArrayList<TextView> textViews, ArrayList<String> collapsePieces, Graph<String, DefaultEdge> graph) {
+        Boolean res = false;
+
+        if (!tv.getText().toString().equals("")) {
+            String[] pieces = tv.getText().toString().split(" ");
+            for (String item : pieces) {
+                if (!item.equals("")) {
+                    for(TextView t: textViews) {
+                        if(t.getText().toString().contains(piece) && t.getText().toString().contains(item)) {
+                            res = true;
+                            collapsePieces.add(piece);
+                        }
+                    }
+                }
+            }
+        }
+
+        PatonCycleBase<String, DefaultEdge> cycleDetector = new PatonCycleBase<>(graph);
+        if (!cycleDetector.getCycleBasis().getCycles().isEmpty()) {
+            res = true;
+            collapsePieces.add(piece);
+        }
+
+        return res;
+    }
+
+    private void collapseAI(ArrayList<Integer> board, ArrayList<TextView> textViews, ArrayList<String> collapsePieces) {
+        if(collapsePieces.size()> 0) {
+            String piece = collapsePieces.get(0);
+            ArrayList<String> vertices = getConnectedVertexOf(piece);
+
+            Boolean isValid = false;
+            ArrayList<String> textViewsCopy = new ArrayList<>();
+            ArrayList<Integer> boardCopy = new ArrayList<>(board);
+            for(TextView tv : textViews) {
+                textViewsCopy.add(tv.getText().toString());
+            }
+
+            while(!isValid) {
+
+                for(TextView tv : textViews) {
+                    tv.setText(textViewsCopy.get(textViews.indexOf(tv)));
+                }
+                board = new ArrayList<>();
+                board.addAll(boardCopy);
+
+                for(String vertex : vertices) {
+                    ArrayList<Integer> indexesToCollapse = getIndexesOfPiece(vertex);
+
+                    Integer index;
+
+                    if(indexesToCollapse.size() > 1) {
+                        index = indexesToCollapse.get(random.nextInt(2));
+                    } else if (indexesToCollapse.size() == 1){
+                        index = indexesToCollapse.get(0);
+                    } else {
+                        break;
+                    }
+
+                    String collapsePiece = vertex.substring(0,1);
+
+                    textViews.get(index).setText(collapsePiece);
+                    if(collapsePiece.equals("X")) {
+                        board.set(index, 1);
+                    } else {
+                        board.set(index, 0);
+                    }
+
+                    if (vertices.indexOf(vertex) == vertices.size() - 1) {
+                        isValid = true;
+                    }
+                }
+            }
+
+            for(String vertex : vertices) {
+                graph.removeVertex(vertex);
+            }
+
+            deleteRemainingQuantumPieces();
+            collapsePieces = new ArrayList<>();
+        }
+
+    }
+
+    private Integer numberOfMillsAI(Integer num, ArrayList<Integer> board) {
+        Integer res = 0;
+        if(board.get(0).equals(num) && board.get(1).equals(num) && board.get(2).equals(num)) {
+            res++;
+        }
+        if (board.get(3).equals(num) && board.get(4).equals(num) && board.get(5).equals(num)) {
+            res++;
+        }
+        if (board.get(6).equals(num) && board.get(7).equals(num) && board.get(8).equals(num)) {
+            res++;
+        }
+        if (board.get(9).equals(num) && board.get(10).equals(num) && board.get(11).equals(num)) {
+            res++;
+        }
+        if (board.get(12).equals(num) && board.get(13).equals(num) && board.get(14).equals(num)) {
+            res++;
+        }
+        if (board.get(15).equals(num) && board.get(16).equals(num) && board.get(17).equals(num)) {
+            res++;
+        }
+        if (board.get(18).equals(num) && board.get(19).equals(num) && board.get(20).equals(num)) {
+            res++;
+        }
+        if (board.get(21).equals(num) && board.get(22).equals(num) && board.get(23).equals(num)) {
+            res++;
+        }
+        if (board.get(0).equals(num) && board.get(9).equals(num) && board.get(21).equals(num)) {
+            res++;
+        }
+        if (board.get(3).equals(num) && board.get(10).equals(num) && board.get(18).equals(num)) {
+            res++;
+        }
+        if (board.get(6).equals(num) && board.get(11).equals(num) && board.get(15).equals(num)) {
+            res++;
+        }
+        if (board.get(1).equals(num) && board.get(4).equals(num) && board.get(7).equals(num)) {
+            res++;
+        }
+        if (board.get(16).equals(num) && board.get(19).equals(num) && board.get(22).equals(num)) {
+            res++;
+        }
+        if (board.get(8).equals(num) && board.get(12).equals(num) && board.get(17).equals(num)) {
+            res++;
+        }
+        if (board.get(5).equals(num) && board.get(13).equals(num) && board.get(20).equals(num)) {
+            res++;
+        }
+        if (board.get(2).equals(num) && board.get(14).equals(num) && board.get(23).equals(num)) {
+            res++;
+        }
+        return res;
     }
 
 }
