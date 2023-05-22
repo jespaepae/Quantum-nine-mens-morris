@@ -2,7 +2,6 @@ package com.example.quantumninemensmorris;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -29,7 +28,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 
-public class GameVsAI extends Activity {
+public class LocalQuantumGame extends Activity {
 
     private ArrayList<TextView> textViews;
     private Graph<String, DefaultEdge> graph;
@@ -124,7 +123,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(LocalQuantumGame.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else if (turn.equals("O") && !tv.getText().toString().trim().contains(oPiecesRemaining.get(0))){
                                     millsBefore = numberOfMills(0);
@@ -134,32 +133,11 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(LocalQuantumGame.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 if(!newMill && (xPiecesPlaced % 2 == 0 && oPiecesPlaced % 2 == 0)) {
                                     choosePlayer();
-                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
-                                    millsBefore = numberOfMills(0);
-                                    oPiecesPlaced--;
-                                    oPieces++;
-                                    placePiece(0, textViews.get(bestMove.get(0)));
-                                    millsAfter = numberOfMills(0);
-                                    if(millsAfter - millsBefore > 0) {
-                                        newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
-                                    }
-                                    millsBefore = numberOfMills(0);
-                                    oPiecesPlaced--;
-                                    oPieces++;
-                                    placePiece(0, textViews.get(bestMove.get(1)));
-                                    millsAfter = numberOfMills(0);
-                                    if(millsAfter - millsBefore > 0) {
-                                        newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
-                                    }
-                                    choosePlayer();
-
                                 }
                                 choosePhase();
                                 showTurn();
@@ -183,7 +161,7 @@ public class GameVsAI extends Activity {
                             if(tv.getText().equals(turn) && moving < 0 && availableMovesOf(textViews.indexOf(tv)).size() > 1) {
                                 moving = textViews.indexOf(tv);
                                 tv.setTypeface(null, Typeface.BOLD);
-                                Toast.makeText(GameVsAI.this, "Moving piece", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LocalQuantumGame.this, "Moving piece", Toast.LENGTH_SHORT).show();
                             } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))
                                         && !moving.equals(textViews.indexOf(tv))) {
                                 if(turn.equals("X")) {
@@ -203,7 +181,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(LocalQuantumGame.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
                                     millsBefore = numberOfMills(0);
@@ -222,32 +200,10 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(LocalQuantumGame.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 if(!newMill) {
-                                    choosePlayer();
-
-                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
-                                    millsBefore = numberOfMills(0);
-                                    collapseMoving(textViews.get(bestMove.get(1)));
-                                    if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
-                                        board.set(textViews.indexOf(bestMove.get(0)), 2);
-                                        textViews.get(textViews.indexOf(bestMove.get(0))).setText("");
-                                        board.set(textViews.indexOf(textViews.get(bestMove.get(1))), 0);
-                                        textViews.get(bestMove.get(1)).setText("O");
-                                    } else {
-                                        board.set(textViews.indexOf(textViews.get(bestMove.get(1))), 1);
-                                        textViews.get(bestMove.get(1)).setText("X");
-                                    }
-                                    oPiecesPlaced--;
-                                    oPieces++;
-                                    millsAfter = numberOfMills(0);
-                                    if(millsAfter - millsBefore > 0) {
-                                        newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
-                                    }
-
                                     choosePlayer();
                                 }
                                 choosePhase();
@@ -279,7 +235,7 @@ public class GameVsAI extends Activity {
                             if(tv.getText().equals(turn) && moving < 0 && availableMovesOf(textViews.indexOf(tv)).size() > 1) {
                                 moving = textViews.indexOf(tv);
                                 tv.setTypeface(null, Typeface.BOLD);
-                                Toast.makeText(GameVsAI.this, "Moving piece", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LocalQuantumGame.this, "Moving piece", Toast.LENGTH_SHORT).show();
                             } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))
                                     && !moving.equals(textViews.indexOf(tv))) {
                                 if(turn.equals("X")) {
@@ -299,7 +255,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(LocalQuantumGame.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
                                     millsBefore = numberOfMills(0);
@@ -318,7 +274,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(LocalQuantumGame.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 if(!newMill)choosePlayer();
