@@ -164,19 +164,47 @@ public class GameVsAI extends Activity {
                                 choosePhase();
                                 showTurn();
                                 showPhase();
+                                System.out.println(board);
                             } else if(newMill) {
                                 if(turn.equals("X") && tv.getText().equals("O")) {
                                     tv.setText("");
+                                    choosePlayer();
                                     showTurn();
+                                    choosePhase();
+                                    showPhase();
                                     board.set(textViews.indexOf(tv), 2);
                                     newMill = false;
                                 } else if (turn.equals("O") && tv.getText().equals("X")) {
                                     tv.setText("");
                                     choosePlayer();
                                     showTurn();
+                                    choosePhase();
+                                    showPhase();
                                     board.set(textViews.indexOf(tv), 2);
                                     newMill = false;
                                 }
+                                ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
+                                millsBefore = numberOfMills(0);
+                                oPiecesPlaced--;
+                                oPieces++;
+                                placePiece(0, textViews.get(bestMove.get(0)));
+                                millsAfter = numberOfMills(0);
+                                if(millsAfter - millsBefore > 0) {
+                                    newMill = true;
+                                    Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                }
+                                millsBefore = numberOfMills(0);
+                                oPiecesPlaced--;
+                                oPieces++;
+                                placePiece(0, textViews.get(bestMove.get(1)));
+                                millsAfter = numberOfMills(0);
+                                if(millsAfter - millsBefore > 0) {
+                                    newMill = true;
+                                    Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                }
+                                choosePlayer();
+                                System.out.println(board);
+
                             }
                             break;
                         case "Moving":
@@ -232,12 +260,12 @@ public class GameVsAI extends Activity {
                                     millsBefore = numberOfMills(0);
                                     collapseMoving(textViews.get(bestMove.get(1)));
                                     if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
-                                        board.set(textViews.indexOf(bestMove.get(0)), 2);
-                                        textViews.get(textViews.indexOf(bestMove.get(0))).setText("");
-                                        board.set(textViews.indexOf(textViews.get(bestMove.get(1))), 0);
+                                        board.set(bestMove.get(0), 2);
+                                        textViews.get(bestMove.get(0)).setText("");
+                                        board.set(bestMove.get(1), 0);
                                         textViews.get(bestMove.get(1)).setText("O");
                                     } else {
-                                        board.set(textViews.indexOf(textViews.get(bestMove.get(1))), 1);
+                                        board.set(bestMove.get(1), 1);
                                         textViews.get(bestMove.get(1)).setText("X");
                                     }
                                     oPiecesPlaced--;
@@ -273,6 +301,27 @@ public class GameVsAI extends Activity {
                                     board.set(textViews.indexOf(tv), 2);
                                     newMill = false;
                                 }
+                                ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
+                                millsBefore = numberOfMills(0);
+                                collapseMoving(textViews.get(bestMove.get(1)));
+                                if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
+                                    board.set(bestMove.get(0), 2);
+                                    textViews.get(bestMove.get(0)).setText("");
+                                    board.set(bestMove.get(1), 0);
+                                    textViews.get(bestMove.get(1)).setText("O");
+                                } else {
+                                    board.set(bestMove.get(1), 1);
+                                    textViews.get(bestMove.get(1)).setText("X");
+                                }
+                                oPiecesPlaced--;
+                                oPieces++;
+                                millsAfter = numberOfMills(0);
+                                if(millsAfter - millsBefore > 0) {
+                                    newMill = true;
+                                    Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                }
+
+                                choosePlayer();
                             }
                             break;
                         case "Flying":
@@ -390,7 +439,7 @@ public class GameVsAI extends Activity {
 
     private void choosePhase() {
         if(phase.equals("Placing")){
-            if(xPiecesPlaced.equals(0) && oPiecesPlaced.equals(0)) {
+            if(xPiecesRemaining.size() == 0 && oPiecesRemaining.size() == 0) {
                 phase = "Moving";
             }
         } else if (phase.equals("Moving")){
@@ -1052,13 +1101,23 @@ public class GameVsAI extends Activity {
 
         ArrayList<Integer> res = new ArrayList<>(Arrays.asList(2));
         while (true) {
-            Integer num1 = random.nextInt(20);
-            Integer num2 = random.nextInt(20);
-            if (!num1.equals(num2) && availableMovesInPhase(board).contains(num1) && availableMovesInPhase(board).contains(num2)) {
-                res.add(num1);
-                res.add(num2);
-                break;
+            if(phase.equals("Placing")) {
+                Integer num1 = random.nextInt(20);
+                Integer num2 = random.nextInt(20);
+                if (!num1.equals(num2) && availableMovesInPhase(board).contains(num1) && availableMovesInPhase(board).contains(num2)) {
+                    res.add(num1);
+                    res.add(num2);
+                    break;
+                }
+            } else {
+                Integer num1 = random.nextInt(24);
+                if (availableMovesInPhase(board).contains(num1) && availableMovesOf(num1).size() > 1) {
+                    res.add(num1);
+                    res.add(availableMovesOf(num1).get(1));
+                    break;
+                }
             }
+
         }
 
 
