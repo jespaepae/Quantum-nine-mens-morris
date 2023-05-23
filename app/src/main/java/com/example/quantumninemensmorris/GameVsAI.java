@@ -37,7 +37,7 @@ public class GameVsAI extends Activity {
     private String turn="X";
     private String phase = "Placing";
     private Integer xPiecesPlaced = 18, oPiecesPlaced = 18, xPieces = 0, oPieces = 0, millsBefore,
-        millsAfter, moving = -1;
+            millsAfter, moving = -1;
     private Button btnReset;
     private ArrayList<Integer> board;
     private ArrayList<String> xPiecesRemaining, oPiecesRemaining, collapsePieces;
@@ -227,7 +227,7 @@ public class GameVsAI extends Activity {
                                 moving = textViews.indexOf(tv);
                                 tv.setTypeface(null, Typeface.BOLD);
                             } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))
-                                        && !moving.equals(textViews.indexOf(tv))) {
+                                    && !moving.equals(textViews.indexOf(tv))) {
                                 if(turn.equals("X")) {
                                     millsBefore = numberOfMills(1);
                                     collapseMoving(tv);

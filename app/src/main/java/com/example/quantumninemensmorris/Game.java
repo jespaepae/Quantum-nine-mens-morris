@@ -3,6 +3,7 @@ package com.example.quantumninemensmorris;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.TestLooperManager;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -20,10 +21,11 @@ public class Game extends Activity {
     private String turn="X";
     private String phase = "Placing";
     private Integer xPiecesPlaced = 9, oPiecesPlaced = 9, xPieces = 0, oPieces = 0, millsBefore,
-        millsAfter, moving = -1;
+        millsAfter, moving = -1, aitv = 0, aiChosenPiece = 0, aiMove = 0;
     private Button btnReset;
-    private ArrayList<Integer> board;
+    private ArrayList<Integer> board, availableBoxesAi, AiPiecesPlaced;
     private Boolean newMill= false;
+
 
 
     @Override
@@ -81,19 +83,39 @@ public class Game extends Activity {
                                         newMill = true;
                                         Toast.makeText(Game.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
-                                } else {
+                                }
+                                tv.setText(turn);
+                                if(!newMill){
+                                    choosePlayer();
                                     millsBefore = numberOfMills(0);
                                     oPiecesPlaced--;
                                     oPieces++;
-                                    board.set(textViews.indexOf(tv), 0);
+                                    availableBoxesAi = new ArrayList<Integer>();
+                                    for (TextView textv : textViews){
+                                        if (textv.getText().equals("")){
+                                            availableBoxesAi.add(textViews.indexOf(textv));
+                                        }
+                                    }
+                                    aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                    board.set(aitv, 0);
+                                    textViews.get(aitv).setText(turn);
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
                                         Toast.makeText(Game.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        availableBoxesAi = new ArrayList<Integer>();
+                                        for (TextView textv : textViews){
+                                            if (textv.getText().equals("X")){
+                                                availableBoxesAi.add(textViews.indexOf(textv));
+                                            }
+                                        }
+                                        aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                        textViews.get(aitv).setText("");
+                                        board.set(textViews.indexOf(aitv), 2);
+                                        newMill = false;
                                     }
+                                    choosePlayer();
                                 }
-                                tv.setText(turn);
-                                if(!newMill)choosePlayer();
                                 choosePhase();
                                 showTurn();
                                 showPhase();
@@ -104,14 +126,42 @@ public class Game extends Activity {
                                     showTurn();
                                     board.set(textViews.indexOf(tv), 2);
                                     newMill = false;
-                                } else if (turn.equals("O") && tv.getText().equals("X")) {
-                                    tv.setText("");
-                                    choosePlayer();
-                                    showTurn();
-                                    board.set(textViews.indexOf(tv), 2);
-                                    newMill = false;
                                 }
+                                //Ai turn
+                                millsBefore = numberOfMills(0);
+                                oPiecesPlaced--;
+                                oPieces++;
+                                availableBoxesAi = new ArrayList<Integer>();
+                                for (TextView textv : textViews){
+                                    if (textv.getText().equals("")){
+                                        availableBoxesAi.add(textViews.indexOf(textv));
+                                    }
+                                }
+                                aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                textViews.get(aitv).setText(turn);
+                                board.set(aitv, 0);
+                                millsAfter = numberOfMills(0);
+                                if(millsAfter - millsBefore > 0) {
+                                    newMill = true;
+                                    Toast.makeText(Game.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                    availableBoxesAi = new ArrayList<Integer>();
+                                    for (TextView textv : textViews){
+                                        if (textv.getText().equals("X")){
+                                            availableBoxesAi.add(textViews.indexOf(textv));
+                                        }
+                                    }
+                                    aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                    textViews.get(aitv).setText("");
+                                    board.set(textViews.indexOf(aitv), 2);
+                                    newMill = false;
+
+                                }
+                                choosePlayer();
+                                choosePhase();
+                                showTurn();
+                                showPhase();
                             }
+
                             break;
                         case "Moving":
                             if(!tv.getText().equals("") && tv.getText().equals(turn) && moving < 0) {
@@ -120,6 +170,7 @@ public class Game extends Activity {
                                 Toast.makeText(Game.this, "Moving piece", Toast.LENGTH_SHORT).show();
                             } else if (moving >= 0 && !newMill && availableMovesOf(moving).contains(textViews.indexOf(tv))) {
                                 if(turn.equals("X")) {
+                                    //borra la pieza
                                     board.set(moving, 2);
                                     textViews.get(moving).setText("");
                                     millsBefore = numberOfMills(1);
@@ -131,40 +182,97 @@ public class Game extends Activity {
                                         newMill = true;
                                         Toast.makeText(Game.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
-                                } else {
-                                    board.set(moving, 2);
-                                    textViews.get(moving).setText("");
-                                    millsBefore = numberOfMills(0);
-                                    oPiecesPlaced--;
-                                    oPieces++;
-                                    board.set(textViews.indexOf(tv), 0);
+                                }
+                                //segunda pulsación donde se mueve la pieza que esta en la primera pulsación
+                                tv.setText(turn);
+                                //en este if turno de la ia
+                                if(!newMill){
+                                    choosePlayer();
+                                    AiPiecesPlaced = new ArrayList<>();
+                                    for (TextView textv : textViews){
+                                        if (textv.getText().equals("O")){
+                                            AiPiecesPlaced.add(textViews.indexOf(textv));
+                                        }
+                                    }
+                                    aiChosenPiece = AiPiecesPlaced.get((int) (Math.random()*(AiPiecesPlaced.size()+1)));
+                                    board.set(aiChosenPiece,2);
+                                    textViews.get(aiChosenPiece).setText("");
+                                    millsBefore = numberOfMills(1);
+                                    xPiecesPlaced--;
+                                    xPieces++;
+                                    availableBoxesAi = availableMovesOf(aiChosenPiece);
+                                    aiMove = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                    board.set(aiMove, 0);
+                                    textViews.get(aiMove).setText(turn);
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
                                         Toast.makeText(Game.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        availableBoxesAi = new ArrayList<Integer>();
+                                        for (TextView textv : textViews){
+                                            if (textv.getText().equals("X")){
+                                                availableBoxesAi.add(textViews.indexOf(textv));
+                                            }
+                                        }
+                                        aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                        textViews.get(aitv).setText("");
+                                        board.set(textViews.indexOf(aitv), 2);
+                                        newMill = false;
                                     }
+
                                 }
-                                tv.setText(turn);
-                                if(!newMill)choosePlayer();
+                                choosePlayer();
                                 choosePhase();
                                 showTurn();
                                 showPhase();
                                 textViews.get(moving).setTypeface(null, Typeface.NORMAL);
                                 moving = -1;
-                            } else if(newMill) {
+
+
+                            }
+
+                            else if(newMill) {
                                 if(turn.equals("X") && tv.getText().equals("O")) {
                                     tv.setText("");
                                     choosePlayer();
                                     showTurn();
                                     board.set(textViews.indexOf(tv), 2);
                                     newMill = false;
-                                } else if (turn.equals("O") && tv.getText().equals("X")) {
-                                    tv.setText("");
-                                    choosePlayer();
-                                    showTurn();
-                                    board.set(textViews.indexOf(tv), 2);
+                                }
+                                //turno de la ia de nuevo
+
+                                AiPiecesPlaced = new ArrayList<>();
+                                for (TextView textv : textViews){
+                                    if (textv.getText().equals("O")){
+                                        AiPiecesPlaced.add(textViews.indexOf(textv));
+                                    }
+                                }
+                                aiChosenPiece = AiPiecesPlaced.get((int) (Math.random()*(AiPiecesPlaced.size()+1)));
+                                board.set(aiChosenPiece,2);
+                                textViews.get(aiChosenPiece).setText("");
+                                millsBefore = numberOfMills(1);
+                                xPiecesPlaced--;
+                                xPieces++;
+                                availableBoxesAi = availableMovesOf(aiChosenPiece);
+                                aiMove = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                board.set(aiMove, 0);
+                                textViews.get(aiMove).setText(turn);
+                                millsAfter = numberOfMills(0);
+                                if(millsAfter - millsBefore > 0) {
+                                    newMill = true;
+                                    Toast.makeText(Game.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                    availableBoxesAi = new ArrayList<Integer>();
+                                    for (TextView textv : textViews){
+                                        if (textv.getText().equals("X")){
+                                            availableBoxesAi.add(textViews.indexOf(textv));
+                                        }
+                                    }
+                                    aitv = availableBoxesAi.get((int) (Math.random()*(availableBoxesAi.size()+1)));
+                                    textViews.get(aitv).setText("");
+                                    board.set(textViews.indexOf(aitv), 2);
                                     newMill = false;
                                 }
+                                choosePlayer();
                             }
                             break;
                         case "Flying":
@@ -173,18 +281,6 @@ public class Game extends Activity {
                             finish();
                     }
 
-                }
-            });
-            tv.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    switch (phase) {
-                        case "Placing":
-                            break;
-                        case "Moving":
-
-                    }
-                    return false;
                 }
             });
         }
