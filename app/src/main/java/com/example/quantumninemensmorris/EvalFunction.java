@@ -74,6 +74,8 @@ public class EvalFunction {
                         res += (int) Math.round(value*0.8);
                     } else if (board.get(pos).contains(player) && board.get(pos2).contains(player)) {
                         res += value/2;
+                    } else if (board.get(pos).equals("") || board.get(pos2).equals("")) {
+                        res -= value/4;
                     }
                 }
             }
