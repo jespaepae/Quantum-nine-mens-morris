@@ -1,5 +1,6 @@
 package com.example.quantumninemensmorris;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -28,14 +29,14 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 
-public class GameVsAI extends Activity {
+public class AIVsAI extends Activity {
 
     private ArrayList<TextView> textViews;
     private Graph<String, DefaultEdge> graph;
     private String turn="X";
     private String phase = "Placing";
     private Integer xPiecesPlaced = 18, oPiecesPlaced = 18, xPieces = 0, oPieces = 0, millsBefore,
-            millsAfter, moving = -1;
+            millsAfter, moving = -1, XWins = 0, OWins = 0;
     private Button btnReset;
     private ArrayList<Integer> board;
     private ArrayList<String> xPiecesRemaining, oPiecesRemaining, collapsePieces;
@@ -73,6 +74,12 @@ public class GameVsAI extends Activity {
         showPhase();
         textViews = new ArrayList<>();
         getTextViews();
+        for(int i = 0; i < 100; i++) {
+            AIVsAI();
+        }
+        System.out.println("Gana X: " + XWins);
+        System.out.println("Gana O: " + OWins);
+
         setListeners();
     }
 
@@ -123,7 +130,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else if (turn.equals("O") && !tv.getText().toString().trim().contains(oPiecesRemaining.get(0))){
                                     millsBefore = numberOfMills(0);
@@ -133,12 +140,12 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 if(!newMill && (xPiecesPlaced % 2 == 0 && oPiecesPlaced % 2 == 0)) {
                                     choosePlayer();
-                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
+                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board), "O");
                                     millsBefore = numberOfMills(0);
                                     oPiecesPlaced--;
                                     oPieces++;
@@ -146,7 +153,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                     millsBefore = numberOfMills(0);
                                     oPiecesPlaced--;
@@ -155,7 +162,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                         removeRandomPiece("X");
                                         showTurn();
                                         choosePhase();
@@ -189,7 +196,7 @@ public class GameVsAI extends Activity {
                                     pieceTaken = true;
                                 }
                                 if(pieceTaken) {
-                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
+                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board), "O");
                                     millsBefore = numberOfMills(0);
                                     oPiecesPlaced--;
                                     oPieces++;
@@ -197,7 +204,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                     millsBefore = numberOfMills(0);
                                     oPiecesPlaced--;
@@ -206,7 +213,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                         removeRandomPiece("X");
                                         showTurn();
                                         choosePhase();
@@ -243,7 +250,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
                                     millsBefore = numberOfMills(0);
@@ -262,13 +269,13 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 if(!newMill) {
                                     choosePlayer();
 
-                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
+                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board), "O");
                                     millsBefore = numberOfMills(0);
                                     collapseMoving(textViews.get(bestMove.get(1)));
                                     if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
@@ -285,7 +292,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                         removeRandomPiece("X");
                                         showTurn();
                                         choosePhase();
@@ -320,7 +327,7 @@ public class GameVsAI extends Activity {
                                     newMill = false;
                                 }
                                 if(pieceTaken) {
-                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
+                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board), "O");
                                     millsBefore = numberOfMills(0);
                                     collapseMoving(textViews.get(bestMove.get(1)));
                                     if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
@@ -337,7 +344,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                         removeRandomPiece("X");
                                         showTurn();
                                         choosePhase();
@@ -373,7 +380,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(1);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
                                     millsBefore = numberOfMills(0);
@@ -392,13 +399,13 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 if(!newMill) {
                                     choosePlayer();
 
-                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
+                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board), "O");
                                     millsBefore = numberOfMills(0);
                                     collapseMoving(textViews.get(bestMove.get(1)));
                                     if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
@@ -415,7 +422,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                         removeRandomPiece("X");
                                         showTurn();
                                         choosePhase();
@@ -450,7 +457,7 @@ public class GameVsAI extends Activity {
                                     newMill = false;
                                 }
                                 if(pieceTaken) {
-                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board));
+                                    ArrayList<Integer> bestMove = getBestMove(getStringBoard(board), "O");
                                     millsBefore = numberOfMills(0);
                                     collapseMoving(textViews.get(bestMove.get(1)));
                                     if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
@@ -467,7 +474,7 @@ public class GameVsAI extends Activity {
                                     millsAfter = numberOfMills(0);
                                     if(millsAfter - millsBefore > 0) {
                                         newMill = true;
-                                        Toast.makeText(GameVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                                         removeRandomPiece("X");
                                         showTurn();
                                         choosePhase();
@@ -1181,106 +1188,106 @@ public class GameVsAI extends Activity {
         });
     }
 
-    private ArrayList<Integer> minimax_alpha_beta(ArrayList<String> board, int depth, int alpha, int beta, boolean isMaximizing, ArrayList<String> xPiecesRemaining, ArrayList<String> oPiecesRemaining, String phase) {
+    private ArrayList<Integer> minimax_alpha_beta(ArrayList<String> board, int depth, int alpha, int beta, boolean isMaximizing, ArrayList<String> xPiecesRemaining, ArrayList<String> oPiecesRemaining, String phase, String player, Boolean useEvalFunction) {
         ArrayList<Integer> res = new ArrayList<>(Arrays.asList(0, 0, 0));
+        if(useEvalFunction) {
+            if(depth == 0) {
+                String playerb;
+                if(isMaximizing) playerb = "O";
+                else playerb = "X";
+                Integer value = evaluateBoard(board, playerb);
+                res.set(0, value);
+                return res;
+            }
 
-        if(depth == 0) {
-            String player;
-            if(isMaximizing) player = "O";
-            else player = "X";
-            Integer value = evaluateBoard(board, player);
-            res.set(0, value);
-            return res;
-        }
+            if(isMaximizing) {
+                Integer bestValue = Integer.MIN_VALUE;
+                if(phase.equals("Placing")) {
+                    ArrayList<Integer> moves = availableMovesInPhase(phase, board, "O");
+                    for(Integer move1 : moves) {
+                        for(Integer move2 : moves) {
+                            if(move1 != move2 && move2 > move1) {
+                                String actualPhase = new String(phase);
+                                ArrayList<String> boardB = new ArrayList<>(board);
+                                ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
+                                ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
 
-        if(isMaximizing) {
-            Integer bestValue = Integer.MIN_VALUE;
-            if(phase.equals("Placing")) {
-                ArrayList<Integer> moves = availableMovesInPhase(phase, board, "O");
-                for(Integer move1 : moves) {
-                    for(Integer move2 : moves) {
-                        if(move1 != move2 && move2 > move1) {
-                            String actualPhase = new String(phase);
-                            ArrayList<String> boardB = new ArrayList<>(board);
-                            ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
-                            ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+                                boardB.set(move1, boardB.get(move1) + " " + oPiecesRemainingB.get(0));
+                                oPiecesRemainingB.remove(0);
+                                boardB.set(move2, boardB.get(move2) + " " + oPiecesRemainingB.get(0));
+                                oPiecesRemainingB.remove(0);
 
-                            boardB.set(move1, boardB.get(move1) + " " + oPiecesRemainingB.get(0));
-                            oPiecesRemainingB.remove(0);
-                            boardB.set(move2, boardB.get(move2) + " " + oPiecesRemainingB.get(0));
-                            oPiecesRemainingB.remove(0);
+                                if(oPiecesRemainingB.size() == 0) actualPhase = "Moving";
 
-                            if(oPiecesRemainingB.size() == 0) actualPhase = "Moving";
-
-                            ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, false, xPiecesRemainingB, oPiecesRemainingB, actualPhase);
-                            if (value.get(0) > bestValue) {
-                                bestValue = value.get(0);
-                                res.set(1, move1);
-                                res.set(2, move2);
+                                ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, false, xPiecesRemainingB, oPiecesRemainingB, actualPhase, player, true);
+                                if (value.get(0) > bestValue) {
+                                    bestValue = value.get(0);
+                                    res.set(1, move1);
+                                    res.set(2, move2);
+                                }
+                                alpha = Math.max(alpha, bestValue);
+                                if(beta <= alpha) break;
                             }
-                            alpha = Math.max(alpha, bestValue);
                             if(beta <= alpha) break;
                         }
-                        if(beta <= alpha) break;
                     }
-                }
-                res.set(0, bestValue);
-            } else if (phase.equals("Moving")) {
-                ArrayList<Integer> moves = availableMovesInPhase(phase, board, "O");
-                for(Integer move1 : moves) {
-                    ArrayList<Integer> availableMoves = availableMovesOf(move1);
-                    if(availableMoves.size() > 1) {
-                        availableMoves.remove(0);
-                        for(Integer move2 : availableMoves) {
-                            String actualPhase = new String(phase);
-                            ArrayList<String> boardB = new ArrayList<>(board);
-                            ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
-                            ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+                    res.set(0, bestValue);
+                } else if (phase.equals("Moving")) {
+                    ArrayList<Integer> moves = availableMovesInPhase(phase, board, "O");
+                    for(Integer move1 : moves) {
+                        ArrayList<Integer> availableMoves = availableMovesOf(move1, board);
+                        if(availableMoves.size() > 1) {
+                            availableMoves.remove(0);
+                            for(Integer move2 : availableMoves) {
+                                String actualPhase = new String(phase);
+                                ArrayList<String> boardB = new ArrayList<>(board);
+                                ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
+                                ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
 
-                            boardB.set(move1, "");
-                            boardB.set(move2, "O");
+                                boardB.set(move1, "");
+                                boardB.set(move2, "O");
 
-                            ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, false, xPiecesRemainingB, oPiecesRemainingB, actualPhase);
-                            if (value.get(0) > bestValue) {
-                                bestValue = value.get(0);
-                                res.set(1, move1);
-                                res.set(2, move2);
+                                ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, false, xPiecesRemainingB, oPiecesRemainingB, actualPhase, player, true);
+                                if (value.get(0) > bestValue) {
+                                    bestValue = value.get(0);
+                                    res.set(1, move1);
+                                    res.set(2, move2);
+                                }
+                                alpha = Math.max(alpha, bestValue);
+                                if(beta <= alpha) break;
                             }
-                            alpha = Math.max(alpha, bestValue);
                             if(beta <= alpha) break;
                         }
-                        if(beta <= alpha) break;
                     }
-                }
-                res.set(0, bestValue);
-            } else {
-                ArrayList<Integer> moves = availableMovesInPhase(phase, board, "O");
-                for(Integer move1 : moves) {
-                    ArrayList<Integer> availableMoves = availableMovesOf(move1);
-                    if(availableMoves.size() > 1) {
-                        availableMoves.remove(0);
-                        for(Integer move2 : availableMoves) {
-                            String actualPhase = new String(phase);
-                            ArrayList<String> boardB = new ArrayList<>(board);
-                            ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
-                            ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+                    res.set(0, bestValue);
+                } else {
+                    ArrayList<Integer> moves = availableMovesInPhase(phase, board, "O");
+                    for(Integer move1 : moves) {
+                        ArrayList<Integer> availableMoves = availableMovesOf(move1, board);
+                        if(availableMoves.size() > 1) {
+                            availableMoves.remove(0);
+                            for(Integer move2 : availableMoves) {
+                                String actualPhase = new String(phase);
+                                ArrayList<String> boardB = new ArrayList<>(board);
+                                ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
+                                ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
 
-                            boardB.set(move1, "");
-                            boardB.set(move2, "O");
+                                boardB.set(move1, "");
+                                boardB.set(move2, "O");
 
-                            ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, false, xPiecesRemainingB, oPiecesRemainingB, actualPhase);
-                            if (value.get(0) > bestValue) {
-                                bestValue = value.get(0);
-                                res.set(1, move1);
-                                res.set(2, move2);
+                                ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, false, xPiecesRemainingB, oPiecesRemainingB, actualPhase, player, true);
+                                if (value.get(0) > bestValue) {
+                                    bestValue = value.get(0);
+                                    res.set(1, move1);
+                                    res.set(2, move2);
+                                }
+                                alpha = Math.max(alpha, bestValue);
+                                if(beta <= alpha) break;
                             }
-                            alpha = Math.max(alpha, bestValue);
                             if(beta <= alpha) break;
                         }
-                        if(beta <= alpha) break;
                     }
-                }
-                res.set(0, bestValue);
+                    res.set(0, bestValue);
 //                while (true) {
 //                    Integer num1 = random.nextInt(24);
 //                    if (availableMovesInPhase(phase, board, "O").contains(num1) && availableMovesOf(num1).size() > 1) {
@@ -1289,93 +1296,93 @@ public class GameVsAI extends Activity {
 //                        break;
 //                    }
 //                }
-            }
-        } else {
-            Integer bestValue = Integer.MAX_VALUE;
-            if(phase.equals("Placing")) {
-                ArrayList<Integer> moves = availableMovesInPhase(phase, board, "X");
-                for(Integer move1 : moves) {
-                    for(Integer move2 : moves) {
-                        if(move1 != move2 && move2 > move1) {
-                            String actualPhase = new String(phase);
-                            ArrayList<String> boardB = new ArrayList<>(board);
-                            ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
-                            ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
-
-                            boardB.set(move1, boardB.get(move1) + " " + xPiecesRemainingB.get(0));
-                            xPiecesRemainingB.remove(0);
-                            boardB.set(move2, boardB.get(move2) + " " + xPiecesRemainingB.get(0));
-                            xPiecesRemainingB.remove(0);
-
-                            ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, true, xPiecesRemainingB, oPiecesRemainingB, actualPhase);
-                            if (value.get(0) < bestValue) {
-                                bestValue = value.get(0);
-                                res.set(1, move1);
-                                res.set(2, move2);
-                            }
-                            beta = Math.min(beta, bestValue);
-                            if (beta <= alpha) break;
-                        }
-                        if (beta <= alpha) break;
-                    }
                 }
-                res.set(0, bestValue);
-            } else if (phase.equals("Moving")) {
-                ArrayList<Integer> moves = availableMovesInPhase(phase, board, "X");
-                for(Integer move1 : moves) {
-                    ArrayList<Integer> availableMoves = availableMovesOf(move1);
-                    if(availableMoves.size() > 1) {
-                        availableMoves.remove(0);
-                        for(Integer move2 : availableMoves) {
-                            String actualPhase = new String(phase);
-                            ArrayList<String> boardB = new ArrayList<>(board);
-                            ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
-                            ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
-
-                            boardB.set(move1, "");
-                            boardB.set(move2, "X");
-
-                            ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, true, xPiecesRemainingB, oPiecesRemainingB, actualPhase);
-                            if (value.get(0) < bestValue) {
-                                bestValue = value.get(0);
-                                res.set(1, move1);
-                                res.set(2, move2);
-                            }
-                            beta = Math.min(beta, bestValue);
-                            if (beta <= alpha) break;
-                        }
-                        if(beta <= alpha) break;
-                    }
-                }
-                res.set(0, bestValue);
             } else {
-                ArrayList<Integer> moves = availableMovesInPhase(phase, board, "X");
-                for(Integer move1 : moves) {
-                    ArrayList<Integer> availableMoves = availableMovesOf(move1);
-                    if(availableMoves.size() > 1) {
-                        availableMoves.remove(0);
-                        for(Integer move2 : availableMoves) {
-                            String actualPhase = new String(phase);
-                            ArrayList<String> boardB = new ArrayList<>(board);
-                            ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
-                            ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+                Integer bestValue = Integer.MAX_VALUE;
+                if(phase.equals("Placing")) {
+                    ArrayList<Integer> moves = availableMovesInPhase(phase, board, "X");
+                    for(Integer move1 : moves) {
+                        for(Integer move2 : moves) {
+                            if(move1 != move2 && move2 > move1) {
+                                String actualPhase = new String(phase);
+                                ArrayList<String> boardB = new ArrayList<>(board);
+                                ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
+                                ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
 
-                            boardB.set(move1, "");
-                            boardB.set(move2, "X");
+                                boardB.set(move1, boardB.get(move1) + " " + xPiecesRemainingB.get(0));
+                                xPiecesRemainingB.remove(0);
+                                boardB.set(move2, boardB.get(move2) + " " + xPiecesRemainingB.get(0));
+                                xPiecesRemainingB.remove(0);
 
-                            ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, true, xPiecesRemainingB, oPiecesRemainingB, actualPhase);
-                            if (value.get(0) < bestValue) {
-                                bestValue = value.get(0);
-                                res.set(1, move1);
-                                res.set(2, move2);
+                                ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, true, xPiecesRemainingB, oPiecesRemainingB, actualPhase, player, true);
+                                if (value.get(0) < bestValue) {
+                                    bestValue = value.get(0);
+                                    res.set(1, move1);
+                                    res.set(2, move2);
+                                }
+                                beta = Math.min(beta, bestValue);
+                                if (beta <= alpha) break;
                             }
-                            beta = Math.min(beta, bestValue);
                             if (beta <= alpha) break;
                         }
-                        if(beta <= alpha) break;
                     }
-                }
-                res.set(0, bestValue);
+                    res.set(0, bestValue);
+                } else if (phase.equals("Moving")) {
+                    ArrayList<Integer> moves = availableMovesInPhase(phase, board, "X");
+                    for(Integer move1 : moves) {
+                        ArrayList<Integer> availableMoves = availableMovesOf(move1, board);
+                        if(availableMoves.size() > 1) {
+                            availableMoves.remove(0);
+                            for(Integer move2 : availableMoves) {
+                                String actualPhase = new String(phase);
+                                ArrayList<String> boardB = new ArrayList<>(board);
+                                ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
+                                ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+
+                                boardB.set(move1, "");
+                                boardB.set(move2, "X");
+
+                                ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, true, xPiecesRemainingB, oPiecesRemainingB, actualPhase, player, true);
+                                if (value.get(0) < bestValue) {
+                                    bestValue = value.get(0);
+                                    res.set(1, move1);
+                                    res.set(2, move2);
+                                }
+                                beta = Math.min(beta, bestValue);
+                                if (beta <= alpha) break;
+                            }
+                            if(beta <= alpha) break;
+                        }
+                    }
+                    res.set(0, bestValue);
+                } else {
+                    ArrayList<Integer> moves = availableMovesInPhase(phase, board, "X");
+                    for(Integer move1 : moves) {
+                        ArrayList<Integer> availableMoves = availableMovesOf(move1, board);
+                        if(availableMoves.size() > 1) {
+                            availableMoves.remove(0);
+                            for(Integer move2 : availableMoves) {
+                                String actualPhase = new String(phase);
+                                ArrayList<String> boardB = new ArrayList<>(board);
+                                ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
+                                ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+
+                                boardB.set(move1, "");
+                                boardB.set(move2, "X");
+
+                                ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, true, xPiecesRemainingB, oPiecesRemainingB, actualPhase, player, true);
+                                if (value.get(0) < bestValue) {
+                                    bestValue = value.get(0);
+                                    res.set(1, move1);
+                                    res.set(2, move2);
+                                }
+                                beta = Math.min(beta, bestValue);
+                                if (beta <= alpha) break;
+                            }
+                            if(beta <= alpha) break;
+                        }
+                    }
+                    res.set(0, bestValue);
 //                while (true) {
 //                    Integer num1 = random.nextInt(24);
 //                    if (availableMovesInPhase(phase, board, "X").contains(num1) && availableMovesOf(num1).size() > 1) {
@@ -1384,35 +1391,39 @@ public class GameVsAI extends Activity {
 //                        break;
 //                    }
 //                }
+                }
+            }
+        } else {
+            res = new ArrayList<>(Arrays.asList(0));
+
+            while (true) {
+                if(phase.equals("Placing")) {
+                    Integer num1 = random.nextInt(24);
+                    Integer num2 = random.nextInt(24);
+                    if (!num1.equals(num2) && availableMovesInPhase("Placing", board, player).contains(num1) && availableMovesInPhase("Placing", board, player).contains(num2)) {
+                        res.add(num1);
+                        res.add(num2);
+                        break;
+                    }
+                } else if (phase.equals("Moving")){
+                    Integer num1 = random.nextInt(24);
+                    if (availableMovesInPhase("Moving", board, player).contains(num1) && availableMovesOf(num1, board).size() > 1) {
+                        res.add(num1);
+                        res.add(availableMovesOf(num1).get(1));
+                        break;
+                    }
+                } else {
+                    Integer num1 = random.nextInt(24);
+                    if (availableMovesInPhase("Flying", board, player).contains(num1) && availableMovesOf(num1, board).size() > 1) {
+                        res.add(num1);
+                        res.add(availableMovesOf(num1, board).get(1));
+                        break;
+                    }
+                }
+
             }
         }
 
-//        while (true) {
-//            if(phase.equals("Placing")) {
-//                Integer num1 = random.nextInt(20);
-//                Integer num2 = random.nextInt(20);
-//                if (!num1.equals(num2) && availableMovesInPhase(board, "O").contains(num1) && availableMovesInPhase(board, "O").contains(num2)) {
-//                    res.add(num1);
-//                    res.add(num2);
-//                    break;
-//                }
-//            } else if (phase.equals("Moving")){
-//                Integer num1 = random.nextInt(24);
-//                if (availableMovesInPhase(board, "O").contains(num1) && availableMovesOf(num1).size() > 1) {
-//                    res.add(num1);
-//                    res.add(availableMovesOf(num1).get(1));
-//                    break;
-//                }
-//            } else {
-//                Integer num1 = random.nextInt(24);
-//                if (availableMovesInPhase(board, "O").contains(num1) && availableMovesOf(num1).size() > 1) {
-//                    res.add(num1);
-//                    res.add(availableMovesOf(num1).get(1));
-//                    break;
-//                }
-//            }
-//
-//        }
 
         return res;
     }
@@ -1421,16 +1432,18 @@ public class GameVsAI extends Activity {
         Integer res = 0;
 
         res = (int) Math.round(6/6 * EvalFunction.f6(board, player) + 0/6 * EvalFunction.f10(board, player));
-        System.out.println(res);
 //                (int) Math.round(1/6 * EvalFunction.f4(board, player) + 1/6 * EvalFunction.f5(board, player) + 1/6 * EvalFunction.f6(board, player) +
 //                        1/6 * EvalFunction.f7(board, player) + 1/6 * EvalFunction.f8(board, player) + 1/6 * EvalFunction.f9(board, player));
         return res;
     }
 
-    private ArrayList<Integer> getBestMove(ArrayList<String> board) {
+    private ArrayList<Integer> getBestMove(ArrayList<String> board, String player) {
 
         String actualPhase = phase;
-        ArrayList<Integer> bestMove = minimax_alpha_beta(board, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, true, xPiecesRemaining, oPiecesRemaining, actualPhase);
+        Boolean useEvalFunction;
+        if(player.equals("O")) useEvalFunction = true;
+        else useEvalFunction = false;
+        ArrayList<Integer> bestMove = minimax_alpha_beta(board, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, true, xPiecesRemaining, oPiecesRemaining, actualPhase, player, false);
         bestMove.remove(0);
 
         return bestMove;
@@ -1527,6 +1540,484 @@ public class GameVsAI extends Activity {
         textViews.get(pieces.get(remove)).setText("");
         board.set(pieces.get(remove), 2);
 
+    }
+
+    @SuppressLint("NotConstructor")
+    private void AIVsAI() {
+        for(int i = 0; i < 9; i++) {
+            ArrayList<Integer> bestMove = getBestMove(getStringBoard(board), "X");
+            millsBefore = numberOfMills(1);
+            xPiecesPlaced--;
+            xPieces++;
+            placePiece(1, textViews.get(bestMove.get(0)));
+            millsAfter = numberOfMills(1);
+            if(millsAfter - millsBefore > 0) {
+                newMill = true;
+                Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+            }
+            millsBefore = numberOfMills(1);
+            xPiecesPlaced--;
+            xPieces++;
+            placePiece(1, textViews.get(bestMove.get(1)));
+            millsAfter = numberOfMills(1);
+            if(millsAfter - millsBefore > 0) {
+                newMill = true;
+                Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                removeRandomPiece("O");
+                showTurn();
+                choosePhase();
+                showPhase();
+                newMill = false;
+            }
+
+            bestMove = getBestMove(getStringBoard(board), "O");
+            millsBefore = numberOfMills(0);
+            oPiecesPlaced--;
+            oPieces++;
+            placePiece(0, textViews.get(bestMove.get(0)));
+            millsAfter = numberOfMills(0);
+            if(millsAfter - millsBefore > 0) {
+                newMill = true;
+                Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+            }
+            millsBefore = numberOfMills(0);
+            oPiecesPlaced--;
+            oPieces++;
+            placePiece(0, textViews.get(bestMove.get(1)));
+            millsAfter = numberOfMills(0);
+            if(millsAfter - millsBefore > 0) {
+                newMill = true;
+                Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                removeRandomPiece("X");
+                showTurn();
+                choosePhase();
+                showPhase();
+                newMill = false;
+            }
+        }
+        phase = "Moving";
+        while(phase.equals("Moving")) {
+            ArrayList<Integer> bestMove = getBestMove(getStringBoard(board), "X");
+            millsBefore = numberOfMills(1);
+            collapseMoving(textViews.get(bestMove.get(1)));
+            if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
+                board.set(bestMove.get(0), 2);
+                textViews.get(bestMove.get(0)).setText("");
+                board.set(bestMove.get(1), 1);
+                textViews.get(bestMove.get(1)).setText("X");
+            } else {
+                board.set(bestMove.get(0), 1);
+                textViews.get(bestMove.get(0)).setText("X");
+            }
+            xPiecesPlaced--;
+            xPieces++;
+            millsAfter = numberOfMills(1);
+            if(millsAfter - millsBefore > 0) {
+                newMill = true;
+                Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                removeRandomPiece("O");
+                showTurn();
+                choosePhase();
+                showPhase();
+                newMill = false;
+            }
+
+            bestMove = getBestMove(getStringBoard(board), "O");
+            millsBefore = numberOfMills(0);
+            collapseMoving(textViews.get(bestMove.get(1)));
+            if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
+                board.set(bestMove.get(0), 2);
+                textViews.get(bestMove.get(0)).setText("");
+                board.set(bestMove.get(1), 0);
+                textViews.get(bestMove.get(1)).setText("O");
+            } else {
+                board.set(bestMove.get(0), 0);
+                textViews.get(bestMove.get(0)).setText("O");
+            }
+            oPiecesPlaced--;
+            oPieces++;
+            millsAfter = numberOfMills(0);
+            if(millsAfter - millsBefore > 0) {
+                newMill = true;
+                Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                removeRandomPiece("X");
+                showTurn();
+                choosePhase();
+                showPhase();
+                newMill = false;
+            }
+            choosePhase();
+        }
+        while (numberOfPiecesOf("X") >= 3 && numberOfPiecesOf("O") >= 3) {
+            ArrayList<Integer> bestMove = getBestMove(getStringBoard(board), "X");
+            millsBefore = numberOfMills(1);
+            collapseMoving(textViews.get(bestMove.get(1)));
+            if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
+                board.set(bestMove.get(0), 2);
+                textViews.get(bestMove.get(0)).setText("");
+                board.set(bestMove.get(1), 1);
+                textViews.get(bestMove.get(1)).setText("X");
+            } else {
+                board.set(bestMove.get(0), 1);
+                textViews.get(bestMove.get(0)).setText("X");
+            }
+            xPiecesPlaced--;
+            xPieces++;
+            millsAfter = numberOfMills(1);
+            if(millsAfter - millsBefore > 0) {
+                newMill = true;
+                Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
+                removeRandomPiece("O");
+                showTurn();
+                choosePhase();
+                showPhase();
+                newMill = false;
+            }
+
+            bestMove = getBestMove(getStringBoard(board), "O");
+            millsBefore = numberOfMills(0);
+            collapseMoving(textViews.get(bestMove.get(1)));
+            if(textViews.get(bestMove.get(1)).getText().toString().equals("")) {
+                board.set(bestMove.get(0), 2);
+                textViews.get(bestMove.get(0)).setText("");
+                board.set(bestMove.get(1), 0);
+                textViews.get(bestMove.get(1)).setText("O");
+            } else {
+                board.set(bestMove.get(0), 0);
+                textViews.get(bestMove.get(0)).setText("O");
+            }
+            oPiecesPlaced--;
+            oPieces++;
+            millsAfter = numberOfMills(0);
+            if(millsAfter - millsBefore > 0) {
+                newMill = true;
+                Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
+                removeRandomPiece("X");
+                showTurn();
+                choosePhase();
+                showPhase();
+                newMill = false;
+            }
+        }
+
+        if (numberOfPiecesOf("X") < 3) {
+            OWins++;
+        } else {
+            XWins++;
+        }
+
+        turn = "X";
+        phase = "Placing";
+        xPiecesPlaced = 18;
+        oPiecesPlaced = 18;
+        xPieces = 0;
+        oPieces = 0;
+        moving = -1;
+        newMill = false;
+        for (TextView tv : textViews) {
+            tv.setText("");
+        }
+        for (int i = 0; i < board.size(); i++) {
+            board.set(i, 2);
+        }
+        xPiecesRemaining = new ArrayList<>(Arrays.asList("X\u2081", "X\u2081", "X\u2082", "X\u2082",
+                "X\u2083", "X\u2083", "X\u2084", "X\u2084", "X\u2085", "X\u2085", "X\u2086", "X\u2086",
+                "X\u2087", "X\u2087", "X\u2088", "X\u2088", "X\u2089", "X\u2089"));
+
+        oPiecesRemaining = new ArrayList<>(Arrays.asList("O\u2081", "O\u2081", "O\u2082", "O\u2082",
+                "O\u2083", "O\u2083", "O\u2084", "O\u2084", "O\u2085", "O\u2085", "O\u2086", "O\u2086",
+                "O\u2087", "O\u2087", "O\u2088", "O\u2088", "O\u2089", "O\u2089"));
+        collapsePieces = new ArrayList<>();
+        graph = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
+        showTurn();
+        showPhase();
+
+    }
+
+    private ArrayList<Integer> availableMovesOf(Integer piece, ArrayList<String> board) {
+        ArrayList<Integer> res = new ArrayList<>();
+        if(numberOfPiecesOf(textViews.get(piece).getText().toString()) > 3) {
+            switch (piece) {
+                case 0:
+                    res.add(0);
+                    if(boxIsEmpty(1, board)) {
+                        res.add(1);
+                    }
+                    if (boxIsEmpty(9, board)){
+                        res.add(9);
+                    }
+                    break;
+                case 1:
+                    res.add(1);
+                    if(boxIsEmpty(0, board)) {
+                        res.add(0);
+                    }
+                    if (boxIsEmpty(2, board)){
+                        res.add(2);
+                    }
+                    if (boxIsEmpty(4, board)){
+                        res.add(4);
+                    }
+                    break;
+                case 2:
+                    res.add(2);
+                    if(boxIsEmpty(1, board)) {
+                        res.add(1);
+                    }
+                    if (boxIsEmpty(14, board)){
+                        res.add(14);
+                    }
+                    break;
+                case 3:
+                    res.add(3);
+                    if(boxIsEmpty(4, board)) {
+                        res.add(4);
+                    }
+                    if (boxIsEmpty(10, board)){
+                        res.add(10);
+                    }
+                    break;
+                case 4:
+                    res.add(4);
+                    if(boxIsEmpty(1, board)) {
+                        res.add(1);
+                    }
+                    if (boxIsEmpty(3, board)){
+                        res.add(3);
+                    }
+                    if (boxIsEmpty(5, board)){
+                        res.add(5);
+                    }
+                    if (boxIsEmpty(7, board)) {
+                        res.add(7);
+                    }
+                    break;
+                case 5:
+                    res.add(5);
+                    if(boxIsEmpty(4, board)) {
+                        res.add(4);
+                    }
+                    if (boxIsEmpty(13, board)){
+                        res.add(13);
+                    }
+                    break;
+                case 6:
+                    res.add(6);
+                    if(boxIsEmpty(7, board)) {
+                        res.add(7);
+                    }
+                    if (boxIsEmpty(11, board)){
+                        res.add(11);
+                    }
+                    break;
+                case 7:
+                    res.add(7);
+                    if(boxIsEmpty(4, board)) {
+                        res.add(4);
+                    }
+                    if (boxIsEmpty(6, board)){
+                        res.add(6);
+                    }
+                    if (boxIsEmpty(8, board)){
+                        res.add(8);
+                    }
+                    break;
+                case 8:
+                    res.add(8);
+                    if(boxIsEmpty(7, board)) {
+                        res.add(7);
+                    }
+                    if (boxIsEmpty(12, board)){
+                        res.add(12);
+                    }
+                    break;
+                case 9:
+                    res.add(9);
+                    if(boxIsEmpty(0, board)) {
+                        res.add(0);
+                    }
+                    if (boxIsEmpty(10, board)){
+                        res.add(10);
+                    }
+                    if (boxIsEmpty(21, board)){
+                        res.add(21);
+                    }
+                    break;
+                case 10:
+                    res.add(10);
+                    if(boxIsEmpty(3, board)) {
+                        res.add(3);
+                    }
+                    if (boxIsEmpty(9, board)){
+                        res.add(9);
+                    }
+                    if (boxIsEmpty(11, board)){
+                        res.add(11);
+                    }
+                    if (boxIsEmpty(18, board)) {
+                        res.add(18);
+                    }
+                    break;
+                case 11:
+                    res.add(11);
+                    if(boxIsEmpty(6, board)) {
+                        res.add(6);
+                    }
+                    if (boxIsEmpty(10, board)){
+                        res.add(10);
+                    }
+                    if (boxIsEmpty(15, board)){
+                        res.add(15);
+                    }
+                    break;
+                case 12:
+                    res.add(12);
+                    if(boxIsEmpty(8, board)) {
+                        res.add(8);
+                    }
+                    if (boxIsEmpty(13, board)){
+                        res.add(13);
+                    }
+                    if (boxIsEmpty(17, board)){
+                        res.add(17);
+                    }
+                    break;
+                case 13:
+                    res.add(13);
+                    if(boxIsEmpty(5, board)) {
+                        res.add(5);
+                    }
+                    if (boxIsEmpty(12, board)){
+                        res.add(12);
+                    }
+                    if (boxIsEmpty(14, board)){
+                        res.add(14);
+                    }
+                    if (boxIsEmpty(20, board)) {
+                        res.add(20);
+                    }
+                    break;
+                case 14:
+                    res.add(14);
+                    if(boxIsEmpty(2, board)) {
+                        res.add(2);
+                    }
+                    if (boxIsEmpty(13, board)){
+                        res.add(13);
+                    }
+                    if (boxIsEmpty(23, board)){
+                        res.add(23);
+                    }
+                    break;
+                case 15:
+                    res.add(15);
+                    if(boxIsEmpty(11, board)) {
+                        res.add(11);
+                    }
+                    if (boxIsEmpty(16, board)){
+                        res.add(16);
+                    }
+                    break;
+                case 16:
+                    res.add(16);
+                    if(boxIsEmpty(15, board)) {
+                        res.add(15);
+                    }
+                    if (boxIsEmpty(17, board)){
+                        res.add(17);
+                    }
+                    if (boxIsEmpty(19, board)){
+                        res.add(19);
+                    }
+                    break;
+                case 17:
+                    res.add(17);
+                    if(boxIsEmpty(12, board)) {
+                        res.add(12);
+                    }
+                    if (boxIsEmpty(16, board)){
+                        res.add(16);
+                    }
+                    break;
+                case 18:
+                    res.add(18);
+                    if(boxIsEmpty(10, board)) {
+                        res.add(10);
+                    }
+                    if (boxIsEmpty(19, board)){
+                        res.add(19);
+                    }
+                    break;
+                case 19:
+                    res.add(19);
+                    if(boxIsEmpty(16, board)) {
+                        res.add(16);
+                    }
+                    if (boxIsEmpty(18, board)){
+                        res.add(18);
+                    }
+                    if (boxIsEmpty(20, board)){
+                        res.add(20);
+                    }
+                    if (boxIsEmpty(22, board)) res.add(22);
+                    break;
+                case 20:
+                    res.add(20);
+                    if(boxIsEmpty(13, board)) {
+                        res.add(13);
+                    }
+                    if (boxIsEmpty(19, board)){
+                        res.add(19);
+                    }
+                    break;
+                case 21:
+                    res.add(21);
+                    if(boxIsEmpty(9, board)) {
+                        res.add(9);
+                    }
+                    if (boxIsEmpty(22, board)){
+                        res.add(22);
+                    }
+                    break;
+                case 22:
+                    res.add(22);
+                    if(boxIsEmpty(19, board)) {
+                        res.add(19);
+                    }
+                    if (boxIsEmpty(21, board)){
+                        res.add(21);
+                    }
+                    if (boxIsEmpty(23, board)){
+                        res.add(23);
+                    }
+                    break;
+                case 23:
+                    res.add(23);
+                    if(boxIsEmpty(14, board)) {
+                        res.add(14);
+                    }
+                    if (boxIsEmpty(22, board)){
+                        res.add(22);
+                    }
+                    break;
+            }
+        } else {
+            for(int i = 0; i < 24; i++) {
+                if(boxIsEmpty(i)) {
+                    res.add(i);
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private Boolean boxIsEmpty(Integer box, ArrayList<String> board) {
+        Boolean res = false;
+        if (board.get(box).equals("") || board.get(box).length() > 1) {
+            res = true;
+        }
+        return res;
     }
 
 }

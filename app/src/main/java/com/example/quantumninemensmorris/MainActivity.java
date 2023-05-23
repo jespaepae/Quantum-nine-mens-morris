@@ -9,7 +9,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnPlay, btnExit, btnPlayAI;
+    Button btnPlay, btnExit, btnPlayAI, btnAIVsAI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
         btnPlayAI = findViewById(R.id.BtnPlayAI);
         btnPlay = findViewById(R.id.BtnPlay);
         btnExit = findViewById(R.id.BtnExit);
+        btnAIVsAI = findViewById(R.id.BtnAIVsAI);
 
         btnPlayAI.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,6 +41,13 @@ public class MainActivity extends AppCompatActivity {
                finish();
            }
        });
+
+        btnAIVsAI.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initAIVsAIGame();
+            }
+        });
     }
 
     private void initGame() {
@@ -49,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void initAIGame() {
         Intent intent = new Intent(this, GameVsAI.class);
+        startActivity(intent);
+    }
+
+    private void initAIVsAIGame() {
+        Intent intent = new Intent(this, AIVsAI.class);
         startActivity(intent);
     }
 }
