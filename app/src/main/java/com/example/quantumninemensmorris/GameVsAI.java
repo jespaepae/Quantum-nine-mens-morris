@@ -1183,42 +1183,110 @@ public class GameVsAI extends Activity {
         });
     }
 
-    private ArrayList<Integer> minimax_alpha_beta(ArrayList<String> board, int depth, int alpha, int beta, boolean isMaximizing) {
+    private ArrayList<Integer> minimax_alpha_beta(ArrayList<String> board, int depth, int alpha, int beta, boolean isMaximizing, ArrayList<String> xPiecesRemaining, ArrayList<String> oPiecesRemaining) {
+        ArrayList<Integer> res = new ArrayList<>(Arrays.asList(0, 0, 0));
 
-        ArrayList<Integer> res = new ArrayList<>(Arrays.asList(2));
-        while (true) {
-            if(phase.equals("Placing")) {
-                Integer num1 = random.nextInt(20);
-                Integer num2 = random.nextInt(20);
-                if (!num1.equals(num2) && availableMovesInPhase(board).contains(num1) && availableMovesInPhase(board).contains(num2)) {
-                    res.add(num1);
-                    res.add(num2);
-                    break;
-                }
-            } else if (phase.equals("Moving")){
-                Integer num1 = random.nextInt(24);
-                if (availableMovesInPhase(board).contains(num1) && availableMovesOf(num1).size() > 1) {
-                    res.add(num1);
-                    res.add(availableMovesOf(num1).get(1));
-                    break;
-                }
-            } else {
-                Integer num1 = random.nextInt(24);
-                if (availableMovesInPhase(board).contains(num1) && availableMovesOf(num1).size() > 1) {
-                    res.add(num1);
-                    res.add(availableMovesOf(num1).get(1));
-                    break;
-                }
-            }
+        if(depth == 0) {
+            String player;
+            if(isMaximizing) player = "O";
+            else player = "X";
+            Integer value = EvalFunction.f5(board, player);
+            res.set(0, value);
+            System.out.println(value);
+            return res;
 
         }
+
+        if(isMaximizing) {
+            Integer bestValue = Integer.MIN_VALUE;
+            if(phase.equals("Placing")) {
+                ArrayList<Integer> moves = availableMovesInPhase(board, "O");
+                for(Integer move1 : moves) {
+                    for(Integer move2 : moves) {
+                        if(move1 != move2 && move2 > move1) {
+                            ArrayList<String> boardB = new ArrayList<>(board);
+                            ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
+                            ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+                            boardB.set(move1, boardB.get(move1) + " " + oPiecesRemainingB.get(0));
+                            oPiecesRemainingB.remove(0);
+                            boardB.set(move2, boardB.get(move2) + " " + oPiecesRemainingB.get(0));
+                            oPiecesRemainingB.remove(0);
+                            ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, false, xPiecesRemainingB, oPiecesRemainingB);
+                            if (value.get(0) > bestValue) {
+                                bestValue = value.get(0);
+                                res.set(1, move1);
+                                res.set(2, move2);
+                            }
+                            alpha = Math.max(alpha, bestValue);
+                            if(beta <= alpha) break;
+                        }
+                        if(beta <= alpha) break;
+                    }
+                }
+                res.set(0, bestValue);
+            }
+        } else {
+            Integer bestValue = Integer.MAX_VALUE;
+            if(phase.equals("Placing")) {
+                ArrayList<Integer> moves = availableMovesInPhase(board, "X");
+                for(Integer move1 : moves) {
+                    for(Integer move2 : moves) {
+                        if(move1 != move2 && move2 > move1) {
+                            ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
+                            ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+                            board.set(move1, board.get(move1) + " " + xPiecesRemainingB.get(0));
+                            xPiecesRemainingB.remove(0);
+                            board.set(move2, board.get(move2) + " " + xPiecesRemainingB.get(0));
+                            xPiecesRemainingB.remove(0);
+                            ArrayList<Integer> value = minimax_alpha_beta(board, depth-1, alpha, beta, true, xPiecesRemainingB, oPiecesRemainingB);
+                            if (value.get(0) < bestValue) {
+                                bestValue = value.get(0);
+                                res.set(1, move1);
+                                res.set(2, move2);
+                            }
+                            beta = Math.min(beta, bestValue);
+                            if (beta <= alpha) break;
+                        }
+                        if (beta <= alpha) break;
+                    }
+                }
+                res.set(0, bestValue);
+            }
+        }
+
+//        while (true) {
+//            if(phase.equals("Placing")) {
+//                Integer num1 = random.nextInt(20);
+//                Integer num2 = random.nextInt(20);
+//                if (!num1.equals(num2) && availableMovesInPhase(board, "O").contains(num1) && availableMovesInPhase(board, "O").contains(num2)) {
+//                    res.add(num1);
+//                    res.add(num2);
+//                    break;
+//                }
+//            } else if (phase.equals("Moving")){
+//                Integer num1 = random.nextInt(24);
+//                if (availableMovesInPhase(board, "O").contains(num1) && availableMovesOf(num1).size() > 1) {
+//                    res.add(num1);
+//                    res.add(availableMovesOf(num1).get(1));
+//                    break;
+//                }
+//            } else {
+//                Integer num1 = random.nextInt(24);
+//                if (availableMovesInPhase(board, "O").contains(num1) && availableMovesOf(num1).size() > 1) {
+//                    res.add(num1);
+//                    res.add(availableMovesOf(num1).get(1));
+//                    break;
+//                }
+//            }
+//
+//        }
 
         return res;
     }
 
     private ArrayList<Integer> getBestMove(ArrayList<String> board) {
 
-        ArrayList<Integer> bestMove = minimax_alpha_beta(board, 3, 1, 2, true);
+        ArrayList<Integer> bestMove = minimax_alpha_beta(board, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, true, xPiecesRemaining, oPiecesRemaining);
         bestMove.remove(0);
 
         return bestMove;
@@ -1273,7 +1341,7 @@ public class GameVsAI extends Activity {
         return res;
     }
 
-    private ArrayList<Integer> availableMovesInPhase(ArrayList<String> board) {
+    private ArrayList<Integer> availableMovesInPhase(ArrayList<String> board, String player) {
         ArrayList<Integer> moves = new ArrayList<>();
 
         if(phase.equals("Placing")) {
@@ -1286,14 +1354,14 @@ public class GameVsAI extends Activity {
         } else if (phase.equals("Moving")) {
             for(int i = 0; i < board.size(); i++) {
                 String piece = board.get(i);
-                if(isClassicPiece(piece) && piece.equals("O")) {
+                if(isClassicPiece(piece) && piece.equals(player)) {
                     moves.add(i);
                 }
             }
         } else {
             for(int i = 0; i < board.size(); i++) {
                 String piece = board.get(i);
-                if(isClassicPiece(piece) && piece.equals("O")) {
+                if(isClassicPiece(piece) && piece.equals(player)) {
                     moves.add(i);
                 }
             }
