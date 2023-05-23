@@ -1183,7 +1183,7 @@ public class GameVsAI extends Activity {
         });
     }
 
-    private ArrayList<Integer> minimax_alpha_beta(ArrayList<String> board, int depth, int alpha, int beta, boolean isMaximizing, ArrayList<String> xPiecesRemaining, ArrayList<String> oPiecesRemaining) {
+    private ArrayList<Integer> minimax_alpha_beta(ArrayList<String> board, int depth, int alpha, int beta, boolean isMaximizing, ArrayList<String> xPiecesRemaining, ArrayList<String> oPiecesRemaining, String phase) {
         ArrayList<Integer> res = new ArrayList<>(Arrays.asList(0, 0, 0));
 
         if(depth == 0) {
@@ -1192,26 +1192,29 @@ public class GameVsAI extends Activity {
             else player = "X";
             Integer value = EvalFunction.f5(board, player);
             res.set(0, value);
-            System.out.println(value);
             return res;
-
         }
 
         if(isMaximizing) {
             Integer bestValue = Integer.MIN_VALUE;
             if(phase.equals("Placing")) {
-                ArrayList<Integer> moves = availableMovesInPhase(board, "O");
+                ArrayList<Integer> moves = availableMovesInPhase(phase, board, "O");
                 for(Integer move1 : moves) {
                     for(Integer move2 : moves) {
                         if(move1 != move2 && move2 > move1) {
+                            String actualPhase = new String(phase);
                             ArrayList<String> boardB = new ArrayList<>(board);
                             ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
                             ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+
                             boardB.set(move1, boardB.get(move1) + " " + oPiecesRemainingB.get(0));
                             oPiecesRemainingB.remove(0);
                             boardB.set(move2, boardB.get(move2) + " " + oPiecesRemainingB.get(0));
                             oPiecesRemainingB.remove(0);
-                            ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, false, xPiecesRemainingB, oPiecesRemainingB);
+
+                            if(oPiecesRemainingB.size() == 0) actualPhase = "Moving";
+
+                            ArrayList<Integer> value = minimax_alpha_beta(boardB, depth-1, alpha, beta, false, xPiecesRemainingB, oPiecesRemainingB, actualPhase);
                             if (value.get(0) > bestValue) {
                                 bestValue = value.get(0);
                                 res.set(1, move1);
@@ -1224,21 +1227,43 @@ public class GameVsAI extends Activity {
                     }
                 }
                 res.set(0, bestValue);
+            } else if (phase.equals("Moving")) {
+                while (true) {
+                    Integer num1 = random.nextInt(24);
+                    if (availableMovesInPhase(phase, board, "O").contains(num1) && availableMovesOf(num1).size() > 1) {
+                        res.set(1, num1);
+                        res.set(2, availableMovesOf(num1).get(1));
+                        break;
+                    }
+                }
+            } else {
+                while (true) {
+                    Integer num1 = random.nextInt(24);
+                    if (availableMovesInPhase(phase, board, "O").contains(num1) && availableMovesOf(num1).size() > 1) {
+                        res.set(1, num1);
+                        res.set(2, availableMovesOf(num1).get(1));
+                        break;
+                    }
+                }
             }
         } else {
             Integer bestValue = Integer.MAX_VALUE;
             if(phase.equals("Placing")) {
-                ArrayList<Integer> moves = availableMovesInPhase(board, "X");
+                ArrayList<Integer> moves = availableMovesInPhase(phase, board, "X");
                 for(Integer move1 : moves) {
                     for(Integer move2 : moves) {
                         if(move1 != move2 && move2 > move1) {
+                            String actualPhase = new String(phase);
+                            ArrayList<String> boardB = new ArrayList<>(board);
                             ArrayList<String> xPiecesRemainingB = new ArrayList<>(xPiecesRemaining);
                             ArrayList<String> oPiecesRemainingB = new ArrayList<>(oPiecesRemaining);
+
                             board.set(move1, board.get(move1) + " " + xPiecesRemainingB.get(0));
                             xPiecesRemainingB.remove(0);
                             board.set(move2, board.get(move2) + " " + xPiecesRemainingB.get(0));
                             xPiecesRemainingB.remove(0);
-                            ArrayList<Integer> value = minimax_alpha_beta(board, depth-1, alpha, beta, true, xPiecesRemainingB, oPiecesRemainingB);
+
+                            ArrayList<Integer> value = minimax_alpha_beta(board, depth-1, alpha, beta, true, xPiecesRemainingB, oPiecesRemainingB, actualPhase);
                             if (value.get(0) < bestValue) {
                                 bestValue = value.get(0);
                                 res.set(1, move1);
@@ -1251,6 +1276,24 @@ public class GameVsAI extends Activity {
                     }
                 }
                 res.set(0, bestValue);
+            } else if (phase.equals("Moving")) {
+                while (true) {
+                    Integer num1 = random.nextInt(24);
+                    if (availableMovesInPhase(phase, board, "X").contains(num1) && availableMovesOf(num1).size() > 1) {
+                        res.set(1, num1);
+                        res.set(2, availableMovesOf(num1).get(1));
+                        break;
+                    }
+                }
+            } else {
+                while (true) {
+                    Integer num1 = random.nextInt(24);
+                    if (availableMovesInPhase(phase, board, "X").contains(num1) && availableMovesOf(num1).size() > 1) {
+                        res.set(1, num1);
+                        res.set(2, availableMovesOf(num1).get(1));
+                        break;
+                    }
+                }
             }
         }
 
@@ -1286,7 +1329,8 @@ public class GameVsAI extends Activity {
 
     private ArrayList<Integer> getBestMove(ArrayList<String> board) {
 
-        ArrayList<Integer> bestMove = minimax_alpha_beta(board, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, true, xPiecesRemaining, oPiecesRemaining);
+        String actualPhase = phase;
+        ArrayList<Integer> bestMove = minimax_alpha_beta(board, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, true, xPiecesRemaining, oPiecesRemaining, actualPhase);
         bestMove.remove(0);
 
         return bestMove;
@@ -1341,7 +1385,7 @@ public class GameVsAI extends Activity {
         return res;
     }
 
-    private ArrayList<Integer> availableMovesInPhase(ArrayList<String> board, String player) {
+    private ArrayList<Integer> availableMovesInPhase(String phase, ArrayList<String> board, String player) {
         ArrayList<Integer> moves = new ArrayList<>();
 
         if(phase.equals("Placing")) {
