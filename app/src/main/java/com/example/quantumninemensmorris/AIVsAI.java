@@ -74,14 +74,30 @@ public class AIVsAI extends Activity {
         showPhase();
         textViews = new ArrayList<>();
         getTextViews();
-        for(int i = 0; i < 100; i++) {
+
+        for(int i = 0; i < 15; i++) {
             AIVsAI();
+            System.out.println("Gana X: " + XWins);
+            System.out.println("Gana O: " + OWins);
         }
-        System.out.println("Gana X: " + XWins);
-        System.out.println("Gana O: " + OWins);
+        for(int i = 0; i < 5; i++) {
+            AIVsAI();
+            System.out.println("Gana X: " + XWins);
+            System.out.println("Gana O: " + OWins);
+        }
+        for(int i = 0; i < 5; i++) {
+            AIVsAI();
+            System.out.println("Gana X: " + XWins);
+            System.out.println("Gana O: " + OWins);
+        }
+
+
+
 
         setListeners();
     }
+
+
 
     private void setListeners() {
         btnReset.setOnClickListener(new View.OnClickListener() {
@@ -1431,7 +1447,7 @@ public class AIVsAI extends Activity {
     private Integer evaluateBoard(ArrayList<String> board, String player) {
         Integer res = 0;
 
-        res = (int) Math.round(6/6 * EvalFunction.f6(board, player) + 0/6 * EvalFunction.f10(board, player));
+        res = (int) Math.round(6/6 * EvalFunction.f13(board, player) + 0/6 * EvalFunction.f10(board, player));
 //                (int) Math.round(1/6 * EvalFunction.f4(board, player) + 1/6 * EvalFunction.f5(board, player) + 1/6 * EvalFunction.f6(board, player) +
 //                        1/6 * EvalFunction.f7(board, player) + 1/6 * EvalFunction.f8(board, player) + 1/6 * EvalFunction.f9(board, player));
         return res;
@@ -1443,7 +1459,7 @@ public class AIVsAI extends Activity {
         Boolean useEvalFunction;
         if(player.equals("O")) useEvalFunction = true;
         else useEvalFunction = false;
-        ArrayList<Integer> bestMove = minimax_alpha_beta(board, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, true, xPiecesRemaining, oPiecesRemaining, actualPhase, player, false);
+        ArrayList<Integer> bestMove = minimax_alpha_beta(board, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, true, xPiecesRemaining, oPiecesRemaining, actualPhase, player, useEvalFunction);
         bestMove.remove(0);
 
         return bestMove;
@@ -1535,11 +1551,12 @@ public class AIVsAI extends Activity {
             }
         }
 
-        Integer remove = random.nextInt(pieces.size());
+        if(pieces.size() > 0) {
+            Integer remove = random.nextInt(pieces.size());
 
-        textViews.get(pieces.get(remove)).setText("");
-        board.set(pieces.get(remove), 2);
-
+            textViews.get(pieces.get(remove)).setText("");
+            board.set(pieces.get(remove), 2);
+        }
     }
 
     @SuppressLint("NotConstructor")
@@ -1553,7 +1570,6 @@ public class AIVsAI extends Activity {
             millsAfter = numberOfMills(1);
             if(millsAfter - millsBefore > 0) {
                 newMill = true;
-                Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
             }
             millsBefore = numberOfMills(1);
             xPiecesPlaced--;
@@ -1562,7 +1578,6 @@ public class AIVsAI extends Activity {
             millsAfter = numberOfMills(1);
             if(millsAfter - millsBefore > 0) {
                 newMill = true;
-                Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                 removeRandomPiece("O");
                 showTurn();
                 choosePhase();
@@ -1578,7 +1593,6 @@ public class AIVsAI extends Activity {
             millsAfter = numberOfMills(0);
             if(millsAfter - millsBefore > 0) {
                 newMill = true;
-                Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
             }
             millsBefore = numberOfMills(0);
             oPiecesPlaced--;
@@ -1587,7 +1601,6 @@ public class AIVsAI extends Activity {
             millsAfter = numberOfMills(0);
             if(millsAfter - millsBefore > 0) {
                 newMill = true;
-                Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                 removeRandomPiece("X");
                 showTurn();
                 choosePhase();
@@ -1614,7 +1627,6 @@ public class AIVsAI extends Activity {
             millsAfter = numberOfMills(1);
             if(millsAfter - millsBefore > 0) {
                 newMill = true;
-                Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                 removeRandomPiece("O");
                 showTurn();
                 choosePhase();
@@ -1639,7 +1651,6 @@ public class AIVsAI extends Activity {
             millsAfter = numberOfMills(0);
             if(millsAfter - millsBefore > 0) {
                 newMill = true;
-                Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                 removeRandomPiece("X");
                 showTurn();
                 choosePhase();
@@ -1666,7 +1677,6 @@ public class AIVsAI extends Activity {
             millsAfter = numberOfMills(1);
             if(millsAfter - millsBefore > 0) {
                 newMill = true;
-                Toast.makeText(AIVsAI.this, "Player X formed a mill!", Toast.LENGTH_SHORT).show();
                 removeRandomPiece("O");
                 showTurn();
                 choosePhase();
@@ -1691,7 +1701,6 @@ public class AIVsAI extends Activity {
             millsAfter = numberOfMills(0);
             if(millsAfter - millsBefore > 0) {
                 newMill = true;
-                Toast.makeText(AIVsAI.this, "Player O formed a mill!", Toast.LENGTH_SHORT).show();
                 removeRandomPiece("X");
                 showTurn();
                 choosePhase();

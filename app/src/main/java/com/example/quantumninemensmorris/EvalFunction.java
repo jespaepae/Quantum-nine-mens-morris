@@ -8,7 +8,6 @@ public class EvalFunction {
     private static Integer value = 10;
 
     public static Integer f1(ArrayList<String> board, String player) {
-        System.out.println(board);
         Integer res = 0;
         ArrayList<Integer> positions = new ArrayList<>(Arrays.asList(6, 7, 8, 11, 12, 15, 16, 17));
         for(int i = 0; i < board.size(); i++) {
