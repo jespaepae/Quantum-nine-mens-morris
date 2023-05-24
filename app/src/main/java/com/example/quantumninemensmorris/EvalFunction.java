@@ -239,4 +239,166 @@ public class EvalFunction {
 
     }
 
+    public static Integer f14(ArrayList<String> board, String player) {
+        Integer res = 0;
+        String opponent;
+        if (player.equals("X")){
+            opponent = "O";
+        }
+        else {
+            opponent = "X";
+        }
+
+        if (board.get(6).equals(player) && board.get(7).equals(opponent) && board.get(8).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(6).equals(opponent) && board.get(7).equals(player) && board.get(8).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(6).equals(opponent) && board.get(7).equals(opponent) && board.get(8).equals(player)) {
+            res += value;
+        }
+        if (board.get(15).equals(player) && board.get(16).equals(opponent) && board.get(17).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(15).equals(opponent) && board.get(16).equals(player) && board.get(17).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(15).equals(opponent) && board.get(16).equals(opponent) && board.get(17).equals(player)) {
+            res += value;
+        }
+        if (board.get(6).equals(player) && board.get(11).equals(opponent) && board.get(15).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(6).equals(opponent) && board.get(11).equals(player) && board.get(15).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(6).equals(opponent) && board.get(11).equals(opponent) && board.get(15).equals(player)) {
+            res += value;
+        }
+        if (board.get(8).equals(player) && board.get(12).equals(opponent) && board.get(17).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(8).equals(opponent) && board.get(12).equals(player) && board.get(17).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(8).equals(opponent) && board.get(12).equals(opponent) && board.get(17).equals(player)) {
+            res += value;
+        }
+
+        if (board.get(3).equals(player) && board.get(4).equals(opponent) && board.get(5).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(3).equals(opponent) && board.get(4).equals(player) && board.get(5).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(3).equals(opponent) && board.get(4).equals(opponent) && board.get(5).equals(player)) {
+            res += value;
+        }
+        if (board.get(18).equals(player) && board.get(19).equals(opponent) && board.get(20).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(18).equals(opponent) && board.get(19).equals(player) && board.get(20).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(18).equals(opponent) && board.get(19).equals(opponent) && board.get(20).equals(player)) {
+            res += value;
+        }
+        if (board.get(3).equals(player) && board.get(10).equals(opponent) && board.get(18).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(3).equals(opponent) && board.get(10).equals(player) && board.get(18).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(3).equals(opponent) && board.get(10).equals(opponent) && board.get(18).equals(player)) {
+            res += value;
+        }
+        if (board.get(5).equals(player) && board.get(13).equals(opponent) && board.get(20).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(5).equals(opponent) && board.get(13).equals(player) && board.get(20).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(5).equals(opponent) && board.get(13).equals(opponent) && board.get(20).equals(player)) {
+            res += value;
+        }
+
+        if (board.get(0).equals(player) && board.get(1).equals(opponent) && board.get(2).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(0).equals(opponent) && board.get(1).equals(player) && board.get(2).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(0).equals(opponent) && board.get(1).equals(opponent) && board.get(2).equals(player)) {
+            res += value;
+        }
+        if (board.get(21).equals(player) && board.get(22).equals(opponent) && board.get(23).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(21).equals(opponent) && board.get(22).equals(player) && board.get(23).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(21).equals(opponent) && board.get(22).equals(opponent) && board.get(23).equals(player)) {
+            res += value;
+        }
+        if (board.get(0).equals(player) && board.get(9).equals(opponent) && board.get(21).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(0).equals(opponent) && board.get(9).equals(player) && board.get(21).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(0).equals(opponent) && board.get(9).equals(opponent) && board.get(21).equals(player)) {
+            res += value;
+        }
+        if (board.get(2).equals(player) && board.get(14).equals(opponent) && board.get(23).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(2).equals(opponent) && board.get(14).equals(player) && board.get(23).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(2).equals(opponent) && board.get(14).equals(opponent) && board.get(23).equals(player)) {
+            res += value;
+        }
+
+        if (board.get(1).equals(player) && board.get(4).equals(opponent) && board.get(7).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(1).equals(opponent) && board.get(4).equals(player) && board.get(7).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(1).equals(opponent) && board.get(4).equals(opponent) && board.get(7).equals(player)) {
+            res += value;
+        }
+        if (board.get(9).equals(player) && board.get(10).equals(opponent) && board.get(11).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(9).equals(opponent) && board.get(10).equals(player) && board.get(11).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(9).equals(opponent) && board.get(10).equals(opponent) && board.get(11).equals(player)) {
+            res += value;
+        }
+        if (board.get(12).equals(player) && board.get(13).equals(opponent) && board.get(14).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(12).equals(opponent) && board.get(13).equals(player) && board.get(14).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(12).equals(opponent) && board.get(13).equals(opponent) && board.get(14).equals(player)) {
+            res += value;
+        }
+        if (board.get(16).equals(player) && board.get(19).equals(opponent) && board.get(22).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(16).equals(opponent) && board.get(19).equals(player) && board.get(22).equals(opponent)) {
+            res += value;
+        }
+        if (board.get(16).equals(opponent) && board.get(19).equals(opponent) && board.get(22).equals(player)) {
+            res += value;
+        }
+
+        return res;
+    }
+
+
 }
