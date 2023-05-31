@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         btnPlayAI = findViewById(R.id.BtnPlayAI);
         btnPlay = findViewById(R.id.BtnPlay);
         btnExit = findViewById(R.id.BtnExit);
-        btnAIVsAI = findViewById(R.id.BtnAIVsAI);
+//        btnAIVsAI = findViewById(R.id.BtnAIVsAI);
 
         btnPlayAI.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,16 +42,16 @@ public class MainActivity extends AppCompatActivity {
            }
        });
 
-        btnAIVsAI.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initAIVsAIGame();
-            }
-        });
+//        btnAIVsAI.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                initAIVsAIGame();
+//            }
+//        });
     }
 
     private void initGame() {
-        Intent intent = new Intent(this, Game.class);
+        Intent intent = new Intent(this, LocalQuantumGame.class);
         startActivity(intent);
     }
 
@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void initAIVsAIGame() {
-        Intent intent = new Intent(this, AIVsAI.class);
-        startActivity(intent);
-    }
+//    private void initAIVsAIGame() {
+//        Intent intent = new Intent(this, AIVsAI.class);
+//        startActivity(intent);
+//    }
 }

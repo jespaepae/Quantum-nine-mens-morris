@@ -23,6 +23,7 @@
         <activity android:name=".Game"></activity>
         <activity android:name=".GameVsAI"></activity>
         <activity android:name=".AIVsAI"></activity>
+        <activity android:name=".LocalQuantumGame"></activity>
     </application>
 
 </manifest>

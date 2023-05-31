@@ -1420,8 +1420,8 @@ public class GameVsAI extends Activity {
     private Integer evaluateBoard(ArrayList<String> board, String player) {
         Integer res = 0;
 
-        res = (int) Math.round(6/6 * EvalFunction.f6(board, player) + 0/6 * EvalFunction.f10(board, player));
-        System.out.println(res);
+        res = (int) Math.round(EvalFunction.f3(board, player) * 3/12 + 6/12 * EvalFunction.f11(board, player) + 0/12 * EvalFunction.f12(board, player) + 0/12 * EvalFunction.f14(board, player));
+        System.out.println();
 //                (int) Math.round(1/6 * EvalFunction.f4(board, player) + 1/6 * EvalFunction.f5(board, player) + 1/6 * EvalFunction.f6(board, player) +
 //                        1/6 * EvalFunction.f7(board, player) + 1/6 * EvalFunction.f8(board, player) + 1/6 * EvalFunction.f9(board, player));
         return res;
@@ -1522,10 +1522,12 @@ public class GameVsAI extends Activity {
             }
         }
 
-        Integer remove = random.nextInt(pieces.size());
+        if(pieces.size() > 0) {
+            Integer remove = random.nextInt(pieces.size());
 
-        textViews.get(pieces.get(remove)).setText("");
-        board.set(pieces.get(remove), 2);
+            textViews.get(pieces.get(remove)).setText("");
+            board.set(pieces.get(remove), 2);
+        }
 
     }
 

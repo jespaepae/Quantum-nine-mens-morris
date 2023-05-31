@@ -1447,7 +1447,7 @@ public class AIVsAI extends Activity {
     private Integer evaluateBoard(ArrayList<String> board, String player) {
         Integer res = 0;
 
-        res = (int) Math.round(6/6 * EvalFunction.f13(board, player) + 0/6 * EvalFunction.f10(board, player));
+        res = (int) Math.round(3/12 * EvalFunction.f10(board, player) + 3/12 * EvalFunction.f11(board, player) + 3/12 * EvalFunction.f12(board, player) + 3/12 * EvalFunction.f14(board, player));
 //                (int) Math.round(1/6 * EvalFunction.f4(board, player) + 1/6 * EvalFunction.f5(board, player) + 1/6 * EvalFunction.f6(board, player) +
 //                        1/6 * EvalFunction.f7(board, player) + 1/6 * EvalFunction.f8(board, player) + 1/6 * EvalFunction.f9(board, player));
         return res;

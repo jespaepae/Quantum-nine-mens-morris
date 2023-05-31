@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class EvalFunction {
 
-    private static Integer value = 10;
+    private static Integer value = 100;
 
     public static Integer f1(ArrayList<String> board, String player) {
         Integer res = 0;
