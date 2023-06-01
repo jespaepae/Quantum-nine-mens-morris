@@ -168,38 +168,22 @@ public class EvalFunction {
         if (board.get(6).equals(player) && board.get(7).equals(player) && board.get(8).equals(player)) {
             res += value;
         }
-        if (board.get(6).contains(player) && board.get(7).contains(player) && board.get(8).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(6).contains(player) && board.get(7).contains(player)) || (board.get(7).contains(player) && board.get(8).contains(player)) || (board.get(6).contains(player) && board.get(8).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         if (board.get(15).equals(player) && board.get(16).equals(player) && board.get(17).equals(player)) {
             res += value;
         }
-        if (board.get(15).contains(player) && board.get(16).contains(player) && board.get(17).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(15).contains(player) && board.get(16).contains(player)) || (board.get(16).contains(player) && board.get(17).contains(player)) || (board.get(15).contains(player) && board.get(17).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         if (board.get(6).equals(player) && board.get(11).equals(player) && board.get(15).equals(player)) {
             res += value;
         }
-        if (board.get(6).contains(player) && board.get(11).contains(player) && board.get(15).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(6).contains(player) && board.get(11).contains(player)) || (board.get(11).contains(player) && board.get(15).contains(player)) || (board.get(6).contains(player) && board.get(15).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         if (board.get(8).equals(player) && board.get(12).equals(player) && board.get(17).equals(player)) {
             res += value;
         }
-        if (board.get(8).contains(player) && board.get(12).contains(player) && board.get(17).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(8).contains(player) && board.get(12).contains(player)) || (board.get(12).contains(player) && board.get(17).contains(player)) || (board.get(8).contains(player) && board.get(17).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         return res;
 
@@ -211,38 +195,22 @@ public class EvalFunction {
         if (board.get(3).equals(player) && board.get(4).equals(player) && board.get(5).equals(player)) {
             res += value;
         }
-        if (board.get(3).contains(player) && board.get(4).contains(player) && board.get(5).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(3).contains(player) && board.get(4).contains(player)) || (board.get(4).contains(player) && board.get(5).contains(player)) || (board.get(3).contains(player) && board.get(5).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         if (board.get(18).equals(player) && board.get(19).equals(player) && board.get(20).equals(player)) {
             res += value;
         }
-        if (board.get(18).contains(player) && board.get(19).contains(player) && board.get(20).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(18).contains(player) && board.get(19).contains(player)) || (board.get(19).contains(player) && board.get(20).contains(player)) || (board.get(18).contains(player) && board.get(20).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         if (board.get(3).equals(player) && board.get(10).equals(player) && board.get(18).equals(player)) {
             res += value;
         }
-        if (board.get(3).contains(player) && board.get(10).contains(player) && board.get(18).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(3).contains(player) && board.get(10).contains(player)) || (board.get(10).contains(player) && board.get(18).contains(player)) || (board.get(3).contains(player) && board.get(18).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         if (board.get(5).equals(player) && board.get(13).equals(player) && board.get(20).equals(player)) {
             res += value;
         }
-        if (board.get(5).contains(player) && board.get(13).contains(player) && board.get(20).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(5).contains(player) && board.get(13).contains(player)) || (board.get(13).contains(player) && board.get(20).contains(player)) || (board.get(5).contains(player) && board.get(20).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         return res;
 
@@ -254,38 +222,21 @@ public class EvalFunction {
         if (board.get(0).equals(player) && board.get(1).equals(player) && board.get(2).equals(player)) {
             res += value;
         }
-        if (board.get(0).contains(player) && board.get(1).contains(player) && board.get(2).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(0).contains(player) && board.get(1).contains(player)) || (board.get(1).contains(player) && board.get(2).contains(player)) || (board.get(0).contains(player) && board.get(2).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         if (board.get(21).equals(player) && board.get(22).equals(player) && board.get(23).equals(player)) {
             res += value;
-        }
-        if (board.get(21).contains(player) && board.get(22).contains(player) && board.get(23).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(21).contains(player) && board.get(22).contains(player)) || (board.get(22).contains(player) && board.get(23).contains(player)) || (board.get(21).contains(player) && board.get(23).contains(player))) {
-            res += (int) Math.round(value*0.3);
         }
 
         if (board.get(0).equals(player) && board.get(9).equals(player) && board.get(21).equals(player)) {
             res += value;
         }
-        if (board.get(0).contains(player) && board.get(9).contains(player) && board.get(21).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(0).contains(player) && board.get(9).contains(player)) || (board.get(9).contains(player) && board.get(21).contains(player)) || (board.get(0).contains(player) && board.get(21).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         if (board.get(2).equals(player) && board.get(14).equals(player) && board.get(23).equals(player)) {
             res += value;
         }
-        if (board.get(2).contains(player) && board.get(14).contains(player) && board.get(23).contains(player)) {
-            res += (int) Math.round(value*0.5);
-        }else if((board.get(2).contains(player) && board.get(14).contains(player)) || (board.get(14).contains(player) && board.get(23).contains(player)) || (board.get(2).contains(player) && board.get(23).contains(player))) {
-            res += (int) Math.round(value*0.3);
-        }
+
 
         return res;
 
@@ -297,38 +248,22 @@ public class EvalFunction {
         if (board.get(1).equals(player) && board.get(4).equals(player) && board.get(7).equals(player)) {
             res += value;
         }
-        if (board.get(1).contains(player) && board.get(4).contains(player) && board.get(7).contains(player)) {
-            res += (int) Math.round(value*0.4);
-        }else if((board.get(1).contains(player) && board.get(4).contains(player)) || (board.get(4).contains(player) && board.get(7).contains(player)) || (board.get(1).contains(player) && board.get(7).contains(player))) {
-            res += (int) Math.round(value*0.2);
-        }
+
 
         if (board.get(9).equals(player) && board.get(10).equals(player) && board.get(11).equals(player)) {
             res += value;
         }
-        if (board.get(9).contains(player) && board.get(10).contains(player) && board.get(11).contains(player)) {
-            res += (int) Math.round(value*0.4);
-        }else if((board.get(9).contains(player) && board.get(10).contains(player)) || (board.get(10).contains(player) && board.get(11).contains(player)) || (board.get(9).contains(player) && board.get(11).contains(player))) {
-            res += (int) Math.round(value*0.2);
-        }
+
 
         if (board.get(12).equals(player) && board.get(13).equals(player) && board.get(14).equals(player)) {
             res += value;
         }
-        if (board.get(12).contains(player) && board.get(13).contains(player) && board.get(14).contains(player)) {
-            res += (int) Math.round(value*0.4);
-        }else if((board.get(12).contains(player) && board.get(13).contains(player)) || (board.get(13).contains(player) && board.get(14).contains(player)) || (board.get(12).contains(player) && board.get(14).contains(player))) {
-            res += (int) Math.round(value*0.2);
-        }
+
 
         if (board.get(16).equals(player) && board.get(19).equals(player) && board.get(22).equals(player)) {
             res += value;
         }
-        if (board.get(16).contains(player) && board.get(19).contains(player) && board.get(22).contains(player)) {
-            res += (int) Math.round(value*0.4);
-        }else if((board.get(16).contains(player) && board.get(19).contains(player)) || (board.get(19).contains(player) && board.get(22).contains(player)) || (board.get(16).contains(player) && board.get(22).contains(player))) {
-            res += (int) Math.round(value*0.2);
-        }
+
 
         return res;
 
